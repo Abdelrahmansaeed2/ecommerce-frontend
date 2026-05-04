@@ -1,0 +1,48 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Welcome Back</h1>
+      <p>Enter your credentials to access your account.</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="name@example.com"
+          class="form-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          placeholder="••••••••"
+          class="form-input"
+        />
+      </div>
+
+      <div class="form-group checkbox">
+        <input type="checkbox" id="remember" />
+        <label for="remember" class="checkbox-label">Remember me for 30 days</label>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="!loginForm.valid">Sign In</button>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+    </form>
+
+    <p class="signup-link">
+      Don't have an account?
+      <a routerLink="/signup" class="link">Sign Up</a>
+    </p>
+  </div>
+</div>
