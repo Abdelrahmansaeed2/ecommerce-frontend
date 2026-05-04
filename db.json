@@ -1,0 +1,23 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "user@example.com",
+      "password": "$2b$10$QF6BxincCldEtWso0EPv3.M0wnjvYkn3CVtx4Gm3GDVjowR2WGr3K",
+      "name": "John Doe"
+    },
+    {
+      "name": "Assem Mohamed",
+      "email": "assem@gmail.com",
+      "password": "$2b$10$3lVjyY9xR60mRRqjag9HHOY.6ZoYQ844TdLAnrOjF1v/oyDttUeoO",
+      "id": "6HVzPQRv2rw"
+    },
+    {
+      "name": "Assem Mohamed",
+      "email": "assem1@gmail.com",
+      "password": "$2b$10$oD9TYP9BGKAr8HgJ2t5PtehRmYbqGfteMVn79XZ9aZAm39WJPusta",
+      "id": "kpCUR__zdk0"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
