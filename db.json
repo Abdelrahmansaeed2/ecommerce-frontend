@@ -23,6 +23,12 @@
       "email": "abdelrahmansaeed26022020@gmail.com",
       "password": "$2b$10$fXgjDiGqGwKkIbCEPZT8M.7tb6MdBenTICmhHan31F6PsCHbUKcLa",
       "id": "m2yC75ECH5U"
+    },
+    {
+      "name": "Abdelrahman Nader",
+      "email": "example2@gmail.com",
+      "password": "$2b$10$mY8bBMjIEMI6AhbMIxBfGeAltapWktUcHiyiPuxVn6EvfUYcQcnMW",
+      "id": "4N-3E2e3bDc"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

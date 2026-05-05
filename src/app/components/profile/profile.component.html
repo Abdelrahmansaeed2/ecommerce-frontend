@@ -1,5 +1,5 @@
 <main class="flex-grow pt-12 pb-xxl max-w-container-max mx-auto w-full px-gutter md:px-lg grid grid-cols-1 md:grid-cols-4 gap-xl">
-  
+
   <!-- Sidebar -->
   <aside class="md:col-span-1 flex flex-col gap-sm">
       <section class="bg-surface-container-lowest rounded-xl p-md shadow-sm mb-lg border border-outline-variant/30">
@@ -29,14 +29,15 @@
 
   <!-- Content -->
   <section class="md:col-span-3 flex flex-col gap-lg">
-      
+
       <!-- Personal Info Tab -->
-      <article *ngIf="activeTab === 'personal'">
+       @if(activeTab == 'personal'){
+      <article >
           <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 mb-lg">
               <h2 class="font-h2 text-h2 text-on-surface mb-md">Personal Information</h2>
-              
-              <!-- View Mode -->
-              <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-lg border-0 p-0 m-0" *ngIf="!isEditing">
+
+              @if(!isEditing){
+              <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-lg border-0 p-0 m-0" >
                   <p class="flex flex-col gap-xs m-0">
                       <label class="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
                       <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user.name }}</span>
@@ -50,8 +51,8 @@
                       <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user.phone }}</span>
                   </p>
               </fieldset>
-
-              <!-- Edit Mode -->
+            }
+            @else{
               <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-lg border-0 p-0 m-0" *ngIf="isEditing">
                   <p class="flex flex-col gap-xs m-0">
                       <label class="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
@@ -66,11 +67,16 @@
                       <input [(ngModel)]="user.phone" class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white outline-none focus:border-primary" />
                   </p>
               </fieldset>
+            }
 
               <menu class="mt-lg flex justify-end gap-md p-0 m-0 pt-6">
-                  <button *ngIf="isEditing" (click)="toggleEdit()" class="text-on-surface-variant px-md py-sm rounded-lg font-button text-button hover:bg-surface-container-highest transition-colors">Cancel</button>
-                  <button *ngIf="isEditing" (click)="saveProfile()" class="bg-primary text-white px-md py-sm rounded-lg font-button text-button transition-colors">Save Changes</button>
-                  <button *ngIf="!isEditing" (click)="toggleEdit()" class="bg-surface-variant text-on-surface px-md py-sm rounded-lg font-button text-button hover:bg-surface-container-highest transition-colors border border-outline-variant">Edit Details</button>
+                  @if(isEditing){
+                    <button  (click)="toggleEdit()" class="text-on-surface-variant px-md py-sm rounded-lg font-button text-button hover:bg-surface-container-highest transition-colors">Cancel</button>
+                    <button  (click)="saveProfile()" class="bg-primary text-white px-md py-sm rounded-lg font-button text-button transition-colors">Save Changes</button>
+                  }
+                  @else{
+                    <button (click)="toggleEdit()" class="bg-surface-variant text-on-surface px-md py-sm rounded-lg font-button text-button hover:bg-surface-container-highest transition-colors border border-outline-variant">Edit Details</button>
+                  }
               </menu>
           </section>
 
@@ -83,8 +89,11 @@
                   </button>
               </header>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-                  <address *ngFor="let address of addresses" [class.border-primary]="address.isDefault" [class.bg-surface-container-low]="address.isDefault" class="border border-outline-variant rounded-lg p-md relative bg-white not-italic">
-                      <span *ngIf="address.isDefault" class="absolute top-md right-md bg-primary text-on-primary font-label-caps text-[10px] px-2 py-1 rounded-full">DEFAULT</span>
+                @for(address of addresses;track address.id){
+                  <address [class.border-primary]="address.isDefault" [class.bg-surface-container-low]="address.isDefault" class="border border-outline-variant rounded-lg p-md relative bg-white not-italic">
+                    @if(address.isDefault){
+                      <span class="absolute top-md right-md bg-primary text-on-primary font-label-caps text-[10px] px-2 py-1 rounded-full">DEFAULT</span>
+                    }
                       <h3 class="font-h3 text-[16px] text-on-surface mb-xs mt-0">{{ address.type }}</h3>
                       <p class="font-body-sm text-body-sm text-on-surface-variant m-0">{{ address.line1 }}</p>
                       <p class="font-body-sm text-body-sm text-on-surface-variant m-0">{{ address.city }}, {{ address.country }}</p>
@@ -92,17 +101,20 @@
                           <button class="text-error hover:text-on-error-container font-button text-sm transition-colors" (click)="deleteAddress(address.id)">Delete</button>
                       </menu>
                   </address>
+                }
               </div>
           </section>
       </article>
-
+    }
+    @else {
+        <article class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+            <h2 class="font-h2 text-h2 text-on-surface mb-md">Order History</h2>
+            <div class="text-center py-xl text-on-surface-variant">
+               <span class="material-symbols-outlined text-4xl mb-sm fs-1">receipt_long</span>
+               <p>No past orders found.</p>
+            </div>
+        </article>
+    }
       <!-- Order History Tab -->
-      <article *ngIf="activeTab === 'orders'" class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
-          <h2 class="font-h2 text-h2 text-on-surface mb-md">Order History</h2>
-          <div class="text-center py-xl text-on-surface-variant">
-             <span class="material-symbols-outlined text-4xl mb-sm" style="font-size: 48px;">receipt_long</span>
-             <p>No past orders found.</p>
-          </div>
-      </article>
   </section>
 </main>

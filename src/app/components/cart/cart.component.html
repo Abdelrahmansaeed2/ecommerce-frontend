@@ -3,10 +3,12 @@
     <h1 class="page-title">Your Atelier Selection</h1>
     <p class="page-subtitle">Refined essentials curated for your unique perspective. Review your selection before finalizing your acquisition.</p>
   </header>
-  
-  <section class="layout-grid" *ngIf="(cart$ | async)?.length; else emptyCart">
+
+  @if((cart$ | async)?.length){
+  <section class="layout-grid">
     <section class="layout-main-col">
-      <article class="cart-item" *ngFor="let item of cart$ | async">
+      @for(item of cart$ | async;track item.product.id){
+      <article class="cart-item">
         <figure class="cart-item-image-container" [routerLink]="['/product', item.product.id]" style="cursor: pointer;">
           <img class="cart-item-img" [src]="item.product.image"/>
         </figure>
@@ -28,8 +30,9 @@
           </div>
         </section>
       </article>
+    }
     </section>
-    
+
     <aside class="layout-sidebar-col">
       <section class="order-summary-card">
         <h2 class="order-summary-title">Order Summary</h2>
@@ -37,7 +40,7 @@
           <div class="summary-row"><span class="font-body-md text-secondary">Subtotal</span><span class="font-body-md text-on-surface">{{ subtotal | currency }}</span></div>
           <div class="summary-row"><span class="font-body-md text-secondary">Estimated Shipping</span><span class="font-body-md text-on-surface">Free</span></div>
           <div class="summary-row"><span class="font-body-md text-secondary">Tax (8%)</span><span class="font-body-md text-on-surface">{{ tax | currency }}</span></div>
-          <div class="summary-total"><span class="font-h3 text-on-surface">Total</span><span class="font-h3 text-on-surface" style="color: var(--primary);">{{ total | currency }}</span></div>
+          <div class="summary-total"><span class="font-h3 text-on-surface">Total</span><span class="font-h3 text-on-surface text-primary" >{{ total | currency }}</span></div>
         </div>
         <button class="checkout-btn" routerLink="/checkout">Proceed to Checkout</button>
         <div class="payment-methods">
@@ -52,19 +55,19 @@
       <div class="concierge-card">
         <span class="material-symbols-outlined text-primary">auto_awesome</span>
         <div>
-          <p class="font-body-sm text-on-surface" style="font-weight: 600; margin:0;">Luxury Concierge Included</p>
-          <p class="font-body-sm text-secondary" style="margin:0;">Every purchase includes complimentary shipping insurance and personal sizing consultation.</p>
+          <p class="font-body-sm text-on-surface fw-bold m-0">Luxury Concierge Included</p>
+          <p class="font-body-sm text-secondary m-0">Every purchase includes complimentary shipping insurance and personal sizing consultation.</p>
         </div>
       </div>
     </aside>
   </section>
-
-  <ng-template #emptyCart>
-    <section style="text-align: center; padding: 64px 24px; background: white; border-radius: 16px; border: 1px dashed var(--outline-variant);">
-      <span class="material-symbols-outlined" style="font-size: 48px; color: var(--outline-variant); margin-bottom: 16px;">shopping_bag</span>
+}
+@else{
+    <section class="text-center px-5 py-3 bg-white rounded-3 border border-black-subtle">
+      <span class="material-symbols-outlined fs-1 mb-3 text-secondary" >shopping_bag</span>
       <h3 class="font-h3 text-on-surface mb-sm">Your cart is empty.</h3>
       <p class="text-secondary mb-xl">Discover our latest collections and essentials.</p>
       <button class="btn btn-primary" routerLink="/shop">Explore Shop</button>
     </section>
-  </ng-template>
+}
 </main>

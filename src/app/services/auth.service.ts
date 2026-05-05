@@ -92,6 +92,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('authToken');
+    
   }
 
   getToken(): string | null {

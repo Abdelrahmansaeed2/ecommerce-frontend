@@ -10,5 +10,8 @@ import { CommonModule } from '@angular/common';
 })
 export class ChatbotComponent {
   isChatOpen: boolean = false;
+handleSubmit(e : Event){
+  e.preventDefault();
+}
   toggleChat() { this.isChatOpen = !this.isChatOpen; }
 }

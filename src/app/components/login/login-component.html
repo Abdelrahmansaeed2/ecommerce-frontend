@@ -34,10 +34,11 @@
       </div>
 
       <button type="submit" class="btn-submit" [disabled]="!loginForm.valid">Sign In</button>
-
-      <div *ngIf="errorMessage" class="error-message">
+      @if(errorMessage){
+      <div class="error-message">
         {{ errorMessage }}
       </div>
+    }
     </form>
 
     <p class="signup-link">
