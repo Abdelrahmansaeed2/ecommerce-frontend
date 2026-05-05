@@ -11,11 +11,9 @@ import { SignupComponent } from './components/signup/signup-component';
 import { AuthGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
-  // 🔓 public
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
 
-  // 🔐 protected
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'shop', component: ShopComponent, canActivate: [AuthGuard] },
