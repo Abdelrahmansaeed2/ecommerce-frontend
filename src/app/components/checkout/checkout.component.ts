@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { CartItem } from '../../models/product.model';
 
 @Component({
   selector: 'app-checkout',
@@ -14,7 +15,7 @@ export class CheckoutComponent {
   router = inject(Router);
   cartService = inject(CartService);
   
-  cart$ = this.cartService.cart$;
+  cart = this.cartService.cart();
   selectedPayment = 'card';
 
   get subtotal() { return this.cartService.getSubtotal(); }

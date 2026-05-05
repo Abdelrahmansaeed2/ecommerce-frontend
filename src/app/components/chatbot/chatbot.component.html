@@ -1,15 +1,30 @@
 <aside class="chat-widget">
-  <section class="chat-window" *ngIf="isChatOpen">
-      <header class="chat-header">
-          <div class="chat-title-group"><div class="chat-status-indicator"></div><span>LUXE Assistant</span></div>
-          <button class="chat-close-action" (click)="toggleChat()"><span class="material-symbols-outlined">close</span></button>
-      </header>
-      <ul class="chat-messages">
-          <li class="chat-message bot"><div class="chat-avatar"><span class="material-symbols-outlined">smart_toy</span></div><div class="chat-bubble"><p style="margin:0;">Hello! Welcome to LUXE.</p></div></li>
-      </ul>
-      <form class="chat-input-container">
-          <div class="chat-input-group"><input class="chat-input" placeholder="Type message..." type="text"/><button class="chat-send-action"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span></button></div>
-      </form>
+  @if(isChatOpen){
+  <section class="chat-window">
+    <header class="chat-header">
+      <div class="chat-title-group"><div
+          class="chat-status-indicator"></div><span>LUXE Assistant</span></div>
+      <button class="chat-close-action" (click)="toggleChat()"><span
+          class="material-symbols-outlined">close</span></button>
+    </header>
+    <ul class="chat-messages">
+      <li class="chat-message bot"><div class="chat-avatar"><span
+            class="material-symbols-outlined">smart_toy</span></div><div
+          class="chat-bubble">
+          <p class="m-0">Hello! Welcome to
+            LUXE.
+          </p>
+          </div>
+       </li>
+    </ul>
+    <form class="chat-input-container " (submit)="handleSubmit($event)" >
+      <div class="chat-input-group"><input class="chat-input"
+          placeholder="Type message..." type="text" /><button
+          class="chat-send-action"><span class="material-symbols-outlined"
+            style="font-variation-settings: 'FILL' 1;">send</span></button></div>
+    </form>
   </section>
-  <button class="chat-fab" (click)="toggleChat()"><span class="material-symbols-outlined chat-fab-icon">chat_bubble</span></button>
+  }
+  <button class="chat-fab" (click)="toggleChat()"><span
+      class="material-symbols-outlined chat-fab-icon">chat_bubble</span></button>
 </aside>

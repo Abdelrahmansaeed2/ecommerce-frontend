@@ -1,160 +1,253 @@
-<main class="app-container" *ngIf="product">
+@if(product()){
+<main class="app-container">
   <nav class="breadcrumbs text-body-sm">
-      <a class="breadcrumb-link" routerLink="/shop">Shop</a>
-      <span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
-      <a class="breadcrumb-link" routerLink="/shop" [queryParams]="{q: product.category}">{{product.category}}</a>
-      <span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
-      <span class="breadcrumb-current">{{product.name}}</span>
+    <a class="breadcrumb-link" routerLink="/shop">Shop</a>
+    <span class="material-symbols-outlined fs-6">chevron_right</span>
+    <a class="breadcrumb-link" routerLink="/shop"
+      [queryParams]="{q: product().category}">{{product().category}}</a>
+    <span class="material-symbols-outlined fs-6">chevron_right</span>
+    <span class="breadcrumb-current">{{product().name}}</span>
   </nav>
 
   <article class="product-grid">
-      <!-- Image Gallery -->
-      <figure class="gallery-container">
-          <div class="gallery-main-image">
-              <img [alt]="product.name" [src]="product.image"/>
+    <figure class="gallery-container">
+      <div class="gallery-main-image">
+        <img [alt]="product().name" [src]="product().image" />
+      </div>
+      <menu class="gallery-thumbnails">
+        <li class="gallery-thumb"><img [src]="product().image" /></li>
+        <li class="gallery-thumb"><img
+            src="https://placeholder.pics/svg/300/e6eeff/0058be-Lifestyle" /></li>
+        <li class="gallery-thumb"><img
+            src="https://placeholder.pics/svg/300/e6eeff/0058be-Detail" /></li>
+        <li class="gallery-thumb">
+          <img src="https://placeholder.pics/svg/300/e6eeff/0058be-More" />
+          <div class="gallery-thumb-overlay text-body-sm"><span>+3
+              More</span></div>
+        </li>
+      </menu>
+    </figure>
+
+    <section class="product-info-container">
+      <header class="product-header">
+        <h1 class="text-h1 spec-title mb-2"
+          >{{product().name}}</h1>
+        <div class="product-rating">
+          <div class="stars">
+            <span class=" fs-5 material-symbols-outlined" data-weight="fill"
+              >star</span>
+            <span class=" fs-5 material-symbols-outlined" data-weight="fill"
+              >star</span>
+            <span class=" fs-5 material-symbols-outlined" data-weight="fill"
+              >star</span>
+            <span class=" fs-5 material-symbols-outlined" data-weight="fill"
+              >star</span>
+              @if(product().rating == 5){
+            <span class="material-symbols-outlined fs-5"
+               data-weight="fill">star</span>
+              }
+              @else{
+            <span class="material-symbols-outlined fs-5"
+              >star_half</span>
+              }
+            <span class="rating-text text-body-sm">{{product().rating}} (128
+              reviews)</span>
           </div>
-          <menu class="gallery-thumbnails">
-              <li class="gallery-thumb"><img [src]="product.image"/></li>
-              <li class="gallery-thumb"><img src="https://placeholder.pics/svg/300/e6eeff/0058be-Lifestyle"/></li>
-              <li class="gallery-thumb"><img src="https://placeholder.pics/svg/300/e6eeff/0058be-Detail"/></li>
-              <li class="gallery-thumb">
-                  <img src="https://placeholder.pics/svg/300/e6eeff/0058be-More"/>
-                  <div class="gallery-thumb-overlay text-body-sm"><span>+3 More</span></div>
-              </li>
-          </menu>
-      </figure>
-
-      <!-- Product Info -->
-      <section class="product-info-container">
-          <header class="product-header">
-              <h1 class="text-h1 spec-title" style="margin-bottom: 8px;">{{product.name}}</h1>
-              <div class="product-rating">
-                  <div class="stars">
-                      <span class="material-symbols-outlined" data-weight="fill" style="font-size: 20px;">star</span>
-                      <span class="material-symbols-outlined" data-weight="fill" style="font-size: 20px;">star</span>
-                      <span class="material-symbols-outlined" data-weight="fill" style="font-size: 20px;">star</span>
-                      <span class="material-symbols-outlined" data-weight="fill" style="font-size: 20px;">star</span>
-                      <span class="material-symbols-outlined" style="font-size: 20px;" *ngIf="product.rating === 5" data-weight="fill">star</span>
-                      <span class="material-symbols-outlined" style="font-size: 20px;" *ngIf="product.rating !== 5">star_half</span>
-                      <span class="rating-text text-body-sm">{{product.rating}} (128 reviews)</span>
-                  </div>
-              </div>
-              <p class="text-h2 product-price">{{product.price | currency}}</p>
-          </header>
-
-          <section class="product-description-section">
-              <p class="text-body-lg product-description">{{product.description}} Experience the pinnacle of comfort and minimalist design, crafted for the modern home.</p>
-              <ul class="feature-list text-body-md">
-                  <li class="feature-item"><span class="material-symbols-outlined feature-icon" style="font-size: 20px;">check_circle</span><span>Hand-assembled solid materials for exceptional durability.</span></li>
-                  <li class="feature-item"><span class="material-symbols-outlined feature-icon" style="font-size: 20px;">check_circle</span><span>Responsibly sourced and sustainably manufactured.</span></li>
-              </ul>
-          </section>
-          
-          <hr class="divider"/>
-
-          <section class="selection-actions">
-              <fieldset>
-                  <legend class="text-label-caps config-label">Configuration</legend>
-                  <menu class="config-options">
-                      <button class="btn-config text-body-sm text-button" [class.active]="activeConfig === 'Standard Finish'" (click)="setConfig('Standard Finish')">Standard Finish</button>
-                      <button class="btn-config text-body-sm text-button" [class.active]="activeConfig === 'Premium Matte'" (click)="setConfig('Premium Matte')">Premium Matte</button>
-                      <button class="btn-config text-body-sm text-button" [class.active]="activeConfig === 'Limited Edition'" (click)="setConfig('Limited Edition')">Limited Edition</button>
-                  </menu>
-              </fieldset>
-
-              <section class="cart-section">
-                  <div class="quantity-wrapper">
-                      <label class="text-label-caps config-label">Quantity</label>
-                      <div class="quantity-control">
-                          <button class="btn-qty" (click)="dec()"><span class="material-symbols-outlined" style="font-size: 20px;">remove</span></button>
-                          <span class="text-body-md" style="color: var(--on-surface); font-weight: 600;">{{quantity}}</span>
-                          <button class="btn-qty" (click)="inc()"><span class="material-symbols-outlined" style="font-size: 20px;">add</span></button>
-                      </div>
-                  </div>
-                  <button class="btn-add-cart text-button" (click)="addToCart()">Add to Cart</button>
-              </section>
-              
-              <ul class="perks-section">
-                  <li class="perk-item"><span class="material-symbols-outlined perk-icon">local_shipping</span><span class="perk-text">Free Shipping</span></li>
-                  <li class="perk-item"><span class="material-symbols-outlined perk-icon">calendar_today</span><span class="perk-text">Ships in 2-4 Weeks</span></li>
-                  <li class="perk-item"><span class="material-symbols-outlined perk-icon">verified_user</span><span class="perk-text">10 Year Warranty</span></li>
-              </ul>
-          </section>
-      </section>
-  </article>
-
-  <!-- Accordion -->
-  <section class="section-separator">
-      <article class="spec-container">
-          <h2 class="text-h2 spec-title">Product Specifications</h2>
-          <div class="spec-list">
-              <div class="spec-item">
-                  <header class="spec-header" (click)="toggleSpec('Materials & Care')">
-                      <span class="text-body-lg spec-heading">Materials & Care</span>
-                      <span class="material-symbols-outlined spec-icon">{{ expandedSpec === 'Materials & Care' ? 'expand_less' : 'expand_more' }}</span>
-                  </header>
-                  <p class="text-body-md spec-content" *ngIf="expandedSpec === 'Materials & Care'">Constructed using premium materials selected for durability and aesthetics. We recommend professional cleaning or wiping with a soft damp cloth.</p>
-              </div>
-              <div class="spec-item">
-                  <header class="spec-header" (click)="toggleSpec('Dimensions')">
-                      <span class="text-body-lg spec-heading">Dimensions</span>
-                      <span class="material-symbols-outlined spec-icon">{{ expandedSpec === 'Dimensions' ? 'expand_less' : 'expand_more' }}</span>
-                  </header>
-                  <p class="text-body-md spec-content" *ngIf="expandedSpec === 'Dimensions'">Standard dimensions apply. See sizing guide for exact measurements.</p>
-              </div>
-              <div class="spec-item" style="border-bottom: none;">
-                  <header class="spec-header" (click)="toggleSpec('Shipping & Assembly')">
-                      <span class="text-body-lg spec-heading">Shipping & Assembly</span>
-                      <span class="material-symbols-outlined spec-icon">{{ expandedSpec === 'Shipping & Assembly' ? 'expand_less' : 'expand_more' }}</span>
-                  </header>
-                  <p class="text-body-md spec-content" *ngIf="expandedSpec === 'Shipping & Assembly'">White-glove delivery included. Assembly is performed on-site by our expert team.</p>
-              </div>
-          </div>
-      </article>
-  </section>
-
-  <!-- Reviews -->
-  <section class="section-separator">
-      <header class="reviews-header">
-          <section class="reviews-summary">
-              <h2 class="text-h2 reviews-title">Customer Reviews</h2>
-              <div class="reviews-score-container">
-                  <span class="reviews-score">{{product.rating}}</span>
-                  <div>
-                      <div class="stars" style="margin-bottom: 4px;">
-                          <span class="material-symbols-outlined" data-weight="fill" style="font-size: 24px;">star</span>
-                          <span class="material-symbols-outlined" data-weight="fill" style="font-size: 24px;">star</span>
-                          <span class="material-symbols-outlined" data-weight="fill" style="font-size: 24px;">star</span>
-                          <span class="material-symbols-outlined" data-weight="fill" style="font-size: 24px;">star</span>
-                          <span class="material-symbols-outlined" data-weight="fill" style="font-size: 24px;">star</span>
-                      </div>
-                      <span class="text-body-sm reviews-count">Based on 128 reviews</span>
-                  </div>
-              </div>
-          </section>
-          <button class="btn-write-review text-button" (click)="writeReview()">Write a Review</button>
+        </div>
+        <p class="text-h2 product-price">{{product().price | currency}}</p>
       </header>
 
-      <section class="reviews-grid">
-          <article class="review-card">
-              <header class="review-card-header">
-                  <div><p class="text-body-md review-author">Sarah Jenkins</p><p class="review-badge">Verified Buyer</p></div>
-                  <div class="stars"><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span></div>
-              </header>
-              <p class="text-body-sm review-text">"The texture is incredible. It's much softer than I expected but feels extremely durable. The delivery team was professional."</p>
-              <div class="review-helpful"><span class="material-symbols-outlined" style="font-size: 14px;">thumb_up</span><span>Helpful (12)</span></div>
-          </article>
-          <article class="review-card">
-              <header class="review-card-header">
-                  <div><p class="text-body-md review-author">Marcus Thorne</p><p class="review-badge">Verified Buyer</p></div>
-                  <div class="stars"><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span><span class="material-symbols-outlined" data-weight="fill" style="font-size: 16px;">star</span></div>
-              </header>
-              <p class="text-body-sm review-text">"A masterpiece of minimalism. It has completely transformed our living space. Fits the room perfectly."</p>
-              <div class="review-helpful"><span class="material-symbols-outlined" style="font-size: 14px;">thumb_up</span><span>Helpful (8)</span></div>
-          </article>
+      <section class="product-description-section">
+        <p class="text-body-lg product-description">{{product().description}}
+          Experience the pinnacle of comfort and minimalist design, crafted for
+          the modern home.</p>
+        <ul class="feature-list text-body-md">
+          <li class="feature-item"><span
+              class="fs-5 material-symbols-outlined feature-icon"
+              >check_circle</span><span>Hand-assembled
+              solid materials for exceptional durability.</span></li>
+          <li class="feature-item"><span
+              class="fs-5 material-symbols-outlined feature-icon"
+              >check_circle</span><span>Responsibly
+              sourced and sustainably manufactured.</span></li>
+        </ul>
       </section>
+
+      <hr class="divider" />
+
+      <section class="selection-actions">
+        <fieldset>
+          <legend class="text-label-caps config-label">Configuration</legend>
+          <menu class="config-options">
+            <button class="btn-config text-body-sm text-button"
+              [class.active]="activeConfig === 'Standard Finish'"
+              (click)="setConfig('Standard Finish')">Standard Finish</button>
+            <button class="btn-config text-body-sm text-button"
+              [class.active]="activeConfig === 'Premium Matte'"
+              (click)="setConfig('Premium Matte')">Premium Matte</button>
+            <button class="btn-config text-body-sm text-button"
+              [class.active]="activeConfig === 'Limited Edition'"
+              (click)="setConfig('Limited Edition')">Limited Edition</button>
+          </menu>
+        </fieldset>
+
+        <section class="cart-section">
+          <div class="quantity-wrapper">
+            <label class="text-label-caps config-label">Quantity</label>
+            <div class="quantity-control">
+              <button class="btn-qty" (click)="dec()"><span
+                  class="material-symbols-outlined fs-5"
+                  >remove</span></button>
+              <span class="text-body-md fw-medium text-dark"
+                >{{quantity}}</span>
+              <button class="btn-qty" (click)="inc()"><span
+                  class="material-symbols-outlined fs-5"
+                  >add</span></button>
+            </div>
+          </div>
+          <button class="btn-add-cart text-button" (click)="addToCart()">Add to
+            Cart</button>
+        </section>
+
+        <ul class="perks-section">
+          <li class="perk-item"><span
+              class="material-symbols-outlined perk-icon">local_shipping</span><span
+              class="perk-text">Free Shipping</span></li>
+          <li class="perk-item"><span
+              class="material-symbols-outlined perk-icon">calendar_today</span><span
+              class="perk-text">Ships in 2-4 Weeks</span></li>
+          <li class="perk-item"><span
+              class="material-symbols-outlined perk-icon">verified_user</span><span
+              class="perk-text">10 Year Warranty</span></li>
+        </ul>
+      </section>
+    </section>
+  </article>
+
+  <section class="section-separator">
+    <article class="spec-container">
+      <h2 class="text-h2 spec-title">Product Specifications</h2>
+      <div class="spec-list">
+        <div class="spec-item">
+          <header class="spec-header" (click)="toggleSpec('Materials & Care')">
+            <span class="text-body-lg spec-heading">Materials & Care</span>
+            <span class="material-symbols-outlined spec-icon">{{ expandedSpec
+              === 'Materials & Care' ? 'expand_less' : 'expand_more' }}</span>
+          </header>
+          @if(expandedSpec === 'Materials & Care'){
+          <p class="text-body-md spec-content"
+            >Constructed using
+            premium materials selected for durability and aesthetics. We
+            recommend professional cleaning or wiping with a soft damp
+            cloth.</p>
+          }
+        </div>
+        <div class="spec-item">
+          <header class="spec-header" (click)="toggleSpec('Dimensions')">
+            <span class="text-body-lg spec-heading">Dimensions</span>
+            <span class="material-symbols-outlined spec-icon">{{ expandedSpec
+              === 'Dimensions' ? 'expand_less' : 'expand_more' }}</span>
+          </header>
+          @if(expandedSpec === 'Dimensions'){
+          <p class="text-body-md spec-content"
+            >Standard dimensions apply. See
+            sizing guide for exact measurements.</p>
+        }
+        </div>
+        <div class="spec-item border-bottom-0" >
+          <header class="spec-header"
+            (click)="toggleSpec('Shipping & Assembly')">
+            <span class="text-body-lg spec-heading">Shipping & Assembly</span>
+            <span class="material-symbols-outlined spec-icon">{{ expandedSpec
+              === 'Shipping & Assembly' ? 'expand_less' : 'expand_more'
+              }}</span>
+          </header>
+          @if(expandedSpec === 'Shipping & Assembly'){
+          <p class="text-body-md spec-content">
+            White-glove delivery
+            included. Assembly is performed on-site by our expert team.</p>
+          }
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="section-separator">
+    <header class="reviews-header">
+      <section class="reviews-summary">
+        <h2 class="text-h2 reviews-title">Customer Reviews</h2>
+        <div class="reviews-score-container">
+          <span class="reviews-score">{{product().rating}}</span>
+          <div>
+            <div class="stars mb-1">
+              <span class="fs-4 material-symbols-outlined" data-weight="fill"
+                >star</span>
+              <span class="fs-4 material-symbols-outlined" data-weight="fill"
+                >star</span>
+              <span class="fs-4 material-symbols-outlined" data-weight="fill"
+                >star</span>
+              <span class="fs-4 material-symbols-outlined" data-weight="fill"
+                >star</span>
+              <span class="fs-4 material-symbols-outlined" data-weight="fill"
+                >star</span>
+            </div>
+            <span class="text-body-sm reviews-count">Based on 128 reviews</span>
+          </div>
+        </div>
+      </section>
+      <button class="btn-write-review text-button" (click)="writeReview()">Write
+        a Review</button>
+    </header>
+
+    <section class="reviews-grid">
+      <article class="review-card">
+        <header class="review-card-header">
+          <div><p class="text-body-md review-author">Sarah Jenkins</p><p
+              class="review-badge">Verified Buyer</p></div>
+          <div class="stars"><span class="fs-6 material-symbols-outlined"
+              data-weight="fill" >star</span><span
+              class="fs-6 material-symbols-outlined" data-weight="fill"
+              >star</span><span
+              class="fs-6 material-symbols-outlined" data-weight="fill"
+              >star</span><span
+              class="fs-6 material-symbols-outlined" data-weight="fill"
+              >star</span><span
+              class="fs-6 material-symbols-outlined" data-weight="fill"
+              >star</span></div>
+        </header>
+        <p
+          class="text-body-sm review-text">"The texture is incredible. It's much softer than I expected but feels extremely durable. The delivery team was professional."</p>
+        <div class="review-helpful"><span class="material-symbols-outlined fs-6"
+            >thumb_up</span><span>Helpful
+            (12)</span></div>
+      </article>
+      <article class="review-card">
+        <header class="review-card-header">
+          <div><p class="text-body-md review-author">Marcus Thorne</p><p
+              class="review-badge">Verified Buyer</p></div>
+          <div class="stars"><span class="material-symbols-outlined fs-6"
+              data-weight="fill">star</span><span
+              class="material-symbols-outlined fs-6"
+              data-weight="fill">star</span><span
+              class="fs-6 material-symbols-outlined" data-weight="fill"
+              >star</span><span
+              class="fs-6 material-symbols-outlined" data-weight="fill"
+              >star</span><span
+              class="fs-6 material-symbols-outlined" data-weight="fill"
+              >star</span></div>
+        </header>
+        <p
+          class="text-body-sm review-text">"A masterpiece of minimalism. It has completely transformed our living space. Fits the room perfectly."</p>
+        <div class="review-helpful"><span class="material-symbols-outlined fs-6"
+            >thumb_up</span><span>Helpful
+            (8)</span></div>
+      </article>
+    </section>
   </section>
 </main>
-<div class="app-container" *ngIf="!product">
-  <h2 style="text-align: center;">Product not found</h2>
+}
+@else{
+<div class="app-container">
+  <h2 class="text-center">Product not found</h2>
 </div>
+}

@@ -3,10 +3,10 @@
       <div class="hero-overlay"></div>
       <img alt="Promotion" class="hero-bg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEriv5W6OM4Tx5hQpRwVZd6RIqMMaRynr6GkwGKugy2KwqT2wZD1pI82lW_2RmJZmtU5P7AZNtQAFZSlGys8AwRRvotPsEYR6XxtOeQnWoWM7POP_Z9I-h7js51rJzaWuaszvI8hkcuw6cSgF3nbHP439DJ_rBzN16DDQzycYq9M1bf-PO_vFYibPq2xXKFBsfFKdod23nnwiHE2JE9ZZm9qyFAUjQHJNHwDmL9GUy8Zyqxd46UHiQs6kOU1FfM1S7oMwsk5P-7bk"/>
       <article class="hero-content">
-          <span class="font-label-caps text-white mb-sm" style="display: block; opacity: 0.9;">NEW ARRIVALS 2024</span>
-          <h1 class="font-h1 text-white mb-md" style="font-size: 56px;">Redefining Contemporary Elegance</h1>
-          <p class="font-body-lg text-white mb-xl" style="opacity: 0.8;">Explore our curated selection of artisanal garments designed for the modern minimalist.</p>
-          <div class="flex-center" style="gap: 16px; justify-content: flex-start;">
+          <span class="font-label-caps text-white mb-sm d-block opacity-75">NEW ARRIVALS 2024</span>
+          <h1 class="font-h1 text-white mb-md fs-1" >Redefining Contemporary Elegance</h1>
+          <p class="font-body-lg text-white mb-xl opacity-75">Explore our curated selection of artisanal garments designed for the modern minimalist.</p>
+          <div class="flex-center gap-3 justify-content-start" >
               <button class="btn btn-primary" routerLink="/shop">Shop Now</button>
           </div>
       </article>
@@ -17,22 +17,24 @@
           <div class="section-divider"></div>
       </header>
       <menu class="category-grid">
-          <a class="category-item" routerLink="/shop" [queryParams]="{q: 'apparel'}"><div class="category-icon"><span class="material-symbols-outlined" style="font-size: 32px;">apparel</span></div><span class="font-body-md" style="font-weight: 500;">Apparel</span></a>
-          <a class="category-item" routerLink="/shop" [queryParams]="{q: 'accessories'}"><div class="category-icon"><span class="material-symbols-outlined" style="font-size: 32px;">watch</span></div><span class="font-body-md" style="font-weight: 500;">Accessories</span></a>
-          <a class="category-item" routerLink="/shop" [queryParams]="{q: 'home objects'}"><div class="category-icon"><span class="material-symbols-outlined" style="font-size: 32px;">chair</span></div><span class="font-body-md" style="font-weight: 500;">Living</span></a>
-          <a class="category-item" routerLink="/shop" [queryParams]="{q: 'fragrance'}"><div class="category-icon"><span class="material-symbols-outlined" style="font-size: 32px;">diamond</span></div><span class="font-body-md" style="font-weight: 500;">Fragrance</span></a>
+          <a class="category-item" routerLink="/shop" [queryParams]="{q: 'apparel'}"><div class="category-icon"><span class="material-symbols-outlined fs-1" >apparel</span></div><span class="font-body-md fw-bold">Apparel</span></a>
+          <a class="category-item" routerLink="/shop" [queryParams]="{q: 'accessories'}"><div class="category-icon"><span class="material-symbols-outlined fs-1" >watch</span></div><span class="font-body-md fw-bold">Accessories</span></a>
+          <a class="category-item" routerLink="/shop" [queryParams]="{q: 'home objects'}"><div class="category-icon"><span class="material-symbols-outlined fs-1" >chair</span></div><span class="font-body-md fw-bold">Living</span></a>
+          <a class="category-item" routerLink="/shop" [queryParams]="{q: 'fragrance'}"><div class="category-icon"><span class="material-symbols-outlined fs-1" >diamond</span></div><span class="font-body-md fw-bold">Fragrance</span></a>
       </menu>
   </section>
   <section class="mb-xl">
       <h2 class="font-h2 text-on-surface mb-xl">Trending Now</h2>
       <div class="trending-grid">
-          <article class="product-card" *ngFor="let product of trendingProducts" [routerLink]="['/product', product.id]">
+        @for(product of trendingProducts();track product.id){
+          <article class="product-card" [routerLink]="['/product', product.id]">
               <figure class="product-image-container">
                   <img [alt]="product.name" class="product-image" [src]="product.image"/>
                   <button class="product-add-btn" (click)="addToCart(product, $event)"><span class="material-symbols-outlined">add</span></button>
               </figure>
-              <section><h4 class="font-body-md text-on-surface" style="font-weight: 500;">{{product.name}}</h4><p class="text-secondary font-body-sm">{{product.price | currency}}</p></section>
+              <section><h4 class="font-body-md text-on-surface fw-medium">{{product.name}}</h4><p class="text-secondary font-body-sm">{{product.price | currency}}</p></section>
           </article>
+        }
       </div>
   </section>
 </main>

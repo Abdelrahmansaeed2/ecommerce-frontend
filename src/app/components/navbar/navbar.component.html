@@ -1,6 +1,6 @@
 <header class="app-navbar">
   <div class="navbar-inner">
-      <section class="flex-center" style="gap: 32px;">
+      <section class="flex-center gap-5">
           <span class="brand" routerLink="/">LUXE</span>
           <nav class="nav-links desktop-only">
               <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Home</a>
@@ -8,13 +8,15 @@
           </nav>
       </section>
       <menu class="nav-actions">
-          <form class="search-box">
+          <form class="search-box" (submit)="onSubmit($event)">
              <span class="material-symbols-outlined search-icon">search</span>
              <input #searchInput (keyup.enter)="onSearch(searchInput.value)" type="text" placeholder="Search aesthetics..." class="search-input">
           </form>
           <button class="icon-btn icon-btn-primary" routerLink="/cart">
-              <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
-              <span class="cart-badge" *ngIf="count > 0">{{ count }}</span>
+              <span class="material-symbols-outlined " style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+              @if(count > 0){
+              <span class="cart-badge">{{ count }}</span>
+              }
           </button>
           <button class="icon-btn" routerLink="/profile"><span class="material-symbols-outlined">person</span></button>
       </menu>

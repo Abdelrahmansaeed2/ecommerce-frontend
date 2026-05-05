@@ -58,6 +58,7 @@ export class AuthService {
         return from(this.createJwt({ id: user.id, email: user.email })).pipe(
           map((token) => {
             localStorage.setItem('authToken', token);
+            localStorage.setItem('User', user.email);
             return user;
           }),
         );
@@ -92,6 +93,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('authToken');
+
   }
 
   getToken(): string | null {

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product.service';
@@ -17,14 +17,19 @@ export class ProductDetailComponent implements OnInit {
   productService = inject(ProductService);
   cartService = inject(CartService);
 
-  product: Product | undefined;
+  product = signal<Product>({} as Product);
   quantity = 1;
   activeConfig = 'Standard Finish';
   expandedSpec = 'Materials & Care';
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      this.product = this.productService.getProductById(params['id']);
+      this.productService.getProducts().subscribe(
+        (data)=> {
+          this.product.set(data.find((p) => p.id == params["id"])!)
+          console.log(this.product)
+        }
+      );
       window.scrollTo(0, 0);
     });
   }
@@ -37,7 +42,7 @@ export class ProductDetailComponent implements OnInit {
 
   addToCart() {
     if(this.product) {
-      this.cartService.addToCart(this.product, this.quantity, this.activeConfig);
+      this.cartService.addToCart(this.product(), this.quantity, this.activeConfig);
       alert(`Added ${this.quantity}x ${this.product.name} (${this.activeConfig}) to your cart!`);
       this.quantity = 1;
     }

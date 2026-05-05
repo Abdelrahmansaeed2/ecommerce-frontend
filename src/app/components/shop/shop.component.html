@@ -13,18 +13,27 @@
 
   <section class="products-section">
     <header class="products-header">
-      <p class="products-count">Showing <span>{{products.length}}</span> products <span *ngIf="searchQuery">for "{{searchQuery}}"</span></p>
-    </header>
+      <p class="products-count">Showing <span>{{products().length}}</span> products 
+        @if(searchQuery){
+        <span>for "{{searchQuery}}"</span>
+        }
+      </p>
 
-    <div *ngIf="products.length === 0" style="padding: 48px; text-align: center; border-radius: 12px; background: white;">
+    </header>
+    @if(products().length === 0){
+    <div class=" p-5 text-center rounded-4 bg-white">
       <h3 class="font-h3 text-secondary">No products found.</h3>
     </div>
+  }
 
     <section class="app-product-grid">
-      <article class="app-product-card" *ngFor="let product of products" [routerLink]="['/product', product.id]">
+      @for(product of products();track product.id){
+      <article class="app-product-card" [routerLink]="['/product', product.id]">
         <figure class="product-image-container">
           <img class="product-image" [src]="product.image"/>
-          <div class="badge-limited" *ngIf="product.isLimited">Limited</div>
+          @if(product.isLimited){
+            <div class="badge-limited">Limited</div>
+          }
           <button class="favorite-btn" (click)="$event.stopPropagation()"><span class="material-symbols-outlined">favorite</span></button>
         </figure>
         <section class="product-details">
@@ -35,6 +44,7 @@
           <button class="product-action-btn" (click)="addToCart(product, $event)"><span class="material-symbols-outlined text-sm">add_shopping_cart</span> Add to Cart</button>
         </section>
       </article>
+    }
     </section>
   </section>
 </main>
