@@ -1,0 +1,116 @@
+<main class="main-content">
+  <nav class="progress-stepper">
+    <ol class="stepper-nav">
+      <div class="step-line-bg"></div>
+      <div class="step-line-active"></div>
+      <li class="step-item">
+        <div class="step-circle completed"><span class="material-symbols-outlined" style="font-variation-settings: 'wght' 600;">check</span></div>
+        <span class="step-label completed">Cart</span>
+      </li>
+      <li class="step-item">
+        <div class="step-circle active">2</div>
+        <span class="step-label active">Checkout</span>
+      </li>
+      <li class="step-item">
+        <div class="step-circle pending">3</div>
+        <span class="step-label pending">Payment</span>
+      </li>
+      <li class="step-item">
+        <div class="step-circle pending">4</div>
+        <span class="step-label pending">Done</span>
+      </li>
+    </ol>
+  </nav>
+
+  <section class="checkout-grid" *ngIf="subtotal > 0; else emptyCheckout">
+    <div class="form-area">
+      <!-- Shipping Information -->
+      <section class="form-section">
+        <header class="section-header">
+          <div class="section-icon"><span class="material-symbols-outlined">local_shipping</span></div>
+          <h2 class="section-title">Shipping Information</h2>
+        </header>
+        <fieldset class="form-grid" style="border:none; padding:0; margin:0;">
+          <p class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="Enter first name" type="text"/></p>
+          <p class="form-group"><label class="form-label">Last Name</label><input class="form-input" placeholder="Enter last name" type="text"/></p>
+          <p class="form-group full-width"><label class="form-label">Street Address</label><input class="form-input" placeholder="123 Luxury Ave, Suite 400" type="text"/></p>
+          <p class="form-group"><label class="form-label">City</label><input class="form-input" placeholder="New York" type="text"/></p>
+          <p class="form-group"><label class="form-label">Postal Code</label><input class="form-input" placeholder="10001" type="text"/></p>
+        </fieldset>
+      </section>
+
+      <!-- Payment Method -->
+      <section class="form-section">
+        <header class="section-header">
+          <div class="section-icon"><span class="material-symbols-outlined">payments</span></div>
+          <h2 class="section-title">Payment Method</h2>
+        </header>
+        <fieldset class="form-grid payment" style="border:none; padding:0; margin:0;">
+          <label class="payment-option" [class.selected]="selectedPayment === 'card'" (click)="setPayment('card')">
+            <div class="payment-option-content">
+              <span class="material-symbols-outlined">credit_card</span>
+              <span class="payment-option-title">Credit Card</span>
+            </div>
+            <div class="payment-check" *ngIf="selectedPayment === 'card'"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span></div>
+          </label>
+          <label class="payment-option" [class.selected]="selectedPayment === 'bank'" (click)="setPayment('bank')">
+            <div class="payment-option-content">
+              <span class="material-symbols-outlined">account_balance</span>
+              <span class="payment-option-title">Bank Transfer</span>
+            </div>
+            <div class="payment-check" *ngIf="selectedPayment === 'bank'"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span></div>
+          </label>
+          <label class="payment-option" [class.selected]="selectedPayment === 'wallet'" (click)="setPayment('wallet')">
+            <div class="payment-option-content">
+              <span class="material-symbols-outlined">wallet</span>
+              <span class="payment-option-title">Digital Wallet</span>
+            </div>
+            <div class="payment-check" *ngIf="selectedPayment === 'wallet'"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span></div>
+          </label>
+        </fieldset>
+
+        <section class="card-details-panel" *ngIf="selectedPayment === 'card'">
+          <fieldset class="card-details-grid" style="border:none; padding:0; margin:0;">
+            <p class="form-group full-width">
+              <label class="form-label">Card Number</label>
+              <span class="input-with-icon">
+                <input class="form-input" placeholder="0000 0000 0000 0000" style="padding-right: 48px;" type="text"/>
+                <span class="material-symbols-outlined input-icon">credit_card</span>
+              </span>
+            </p>
+            <p class="form-group"><label class="form-label">Expiry Date</label><input class="form-input" placeholder="MM/YY" type="text"/></p>
+            <p class="form-group"><label class="form-label">CVC</label><input class="form-input" placeholder="***" type="password"/></p>
+          </fieldset>
+        </section>
+      </section>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="order-summary-sidebar">
+      <section class="summary-panel">
+        <h3 class="summary-title">Order Summary</h3>
+        <div class="cart-items">
+          <article class="cart-item" *ngFor="let item of cart$ | async">
+            <figure class="item-image"><img [src]="item.product.image"/></figure>
+            <div class="item-details"><p class="item-name">{{item.product.name}}</p><p class="item-meta">Qty: {{item.quantity}}</p><p class="item-price">{{item.product.price | currency}}</p></div>
+          </article>
+        </div>
+        <div class="totals-section">
+          <p class="total-row"><span class="total-label">Subtotal</span><span class="total-value">{{ subtotal | currency }}</span></p>
+          <p class="total-row"><span class="total-label">Shipping</span><span class="total-value highlight">Free</span></p>
+          <p class="total-row"><span class="total-label">Estimated Tax</span><span class="total-value">{{ tax | currency }}</span></p>
+          <p class="total-row grand-total"><span class="total-label">Total</span><span class="total-value">{{ total | currency }}</span></p>
+        </div>
+        <button class="btn-primary" (click)="confirmOrder()">Confirm Order <span class="material-symbols-outlined text-sm">arrow_forward</span></button>
+        <p class="terms-text">By clicking confirm, you agree to our <a routerLink="/">Terms of Service</a>.</p>
+      </section>
+    </aside>
+  </section>
+
+  <ng-template #emptyCheckout>
+    <section style="text-align: center; padding: 64px 24px; background: white; border-radius: 16px;">
+      <h3 class="font-h3 text-on-surface mb-sm">Nothing to checkout.</h3>
+      <button class="btn btn-primary" routerLink="/shop">Return to Shop</button>
+    </section>
+  </ng-template>
+</main>

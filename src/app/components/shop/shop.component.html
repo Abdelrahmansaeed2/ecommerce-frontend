@@ -1,0 +1,40 @@
+<main class="container main-content">
+  <aside class="app-filters-sidebar">
+    <fieldset class="filter-section">
+      <legend class="filter-title">Category</legend>
+      <div class="filter-list">
+        <label class="filter-item" routerLink="/shop" [queryParams]="{q: ''}"><span class="filter-label" [class.active]="!searchQuery">All</span></label>
+        <label class="filter-item" routerLink="/shop" [queryParams]="{q: 'apparel'}"><span class="filter-label" [class.active]="searchQuery==='apparel'">Apparel</span></label>
+        <label class="filter-item" routerLink="/shop" [queryParams]="{q: 'accessories'}"><span class="filter-label" [class.active]="searchQuery==='accessories'">Accessories</span></label>
+        <label class="filter-item" routerLink="/shop" [queryParams]="{q: 'home'}"><span class="filter-label" [class.active]="searchQuery==='home'">Home Objects</span></label>
+      </div>
+    </fieldset>
+  </aside>
+
+  <section class="products-section">
+    <header class="products-header">
+      <p class="products-count">Showing <span>{{products.length}}</span> products <span *ngIf="searchQuery">for "{{searchQuery}}"</span></p>
+    </header>
+
+    <div *ngIf="products.length === 0" style="padding: 48px; text-align: center; border-radius: 12px; background: white;">
+      <h3 class="font-h3 text-secondary">No products found.</h3>
+    </div>
+
+    <section class="app-product-grid">
+      <article class="app-product-card" *ngFor="let product of products" [routerLink]="['/product', product.id]">
+        <figure class="product-image-container">
+          <img class="product-image" [src]="product.image"/>
+          <div class="badge-limited" *ngIf="product.isLimited">Limited</div>
+          <button class="favorite-btn" (click)="$event.stopPropagation()"><span class="material-symbols-outlined">favorite</span></button>
+        </figure>
+        <section class="product-details">
+          <header class="product-header">
+            <h4 class="product-title">{{product.name}}</h4><span class="product-price">{{product.price | currency}}</span>
+          </header>
+          <p class="product-description">{{product.description}}</p>
+          <button class="product-action-btn" (click)="addToCart(product, $event)"><span class="material-symbols-outlined text-sm">add_shopping_cart</span> Add to Cart</button>
+        </section>
+      </article>
+    </section>
+  </section>
+</main>
