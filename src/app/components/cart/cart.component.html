@@ -1,0 +1,70 @@
+<main class="main-content">
+  <header class="page-header">
+    <h1 class="page-title">Your Atelier Selection</h1>
+    <p class="page-subtitle">Refined essentials curated for your unique perspective. Review your selection before finalizing your acquisition.</p>
+  </header>
+  
+  <section class="layout-grid" *ngIf="(cart$ | async)?.length; else emptyCart">
+    <section class="layout-main-col">
+      <article class="cart-item" *ngFor="let item of cart$ | async">
+        <figure class="cart-item-image-container" [routerLink]="['/product', item.product.id]" style="cursor: pointer;">
+          <img class="cart-item-img" [src]="item.product.image"/>
+        </figure>
+        <section class="cart-item-content">
+          <header class="cart-item-header">
+            <div [routerLink]="['/product', item.product.id]" style="cursor: pointer;">
+              <h3 class="font-h3 text-on-surface">{{item.product.name}}</h3>
+              <p class="font-body-sm text-secondary">{{item.product.category}} / {{item.configuration}}</p>
+            </div>
+            <span class="font-h3 text-on-surface">{{ item.product.price | currency }}</span>
+          </header>
+          <div class="cart-item-actions">
+            <div class="quantity-selector">
+              <button class="quantity-btn" (click)="dec(item.product.id, item.quantity)"><span class="material-symbols-outlined">remove</span></button>
+              <span class="font-button qty-text">{{item.quantity}}</span>
+              <button class="quantity-btn" (click)="inc(item.product.id, item.quantity)"><span class="material-symbols-outlined">add</span></button>
+            </div>
+            <button class="remove-btn" (click)="remove(item.product.id)"><span class="material-symbols-outlined remove-icon">delete</span> Remove</button>
+          </div>
+        </section>
+      </article>
+    </section>
+    
+    <aside class="layout-sidebar-col">
+      <section class="order-summary-card">
+        <h2 class="order-summary-title">Order Summary</h2>
+        <div class="summary-items-container">
+          <div class="summary-row"><span class="font-body-md text-secondary">Subtotal</span><span class="font-body-md text-on-surface">{{ subtotal | currency }}</span></div>
+          <div class="summary-row"><span class="font-body-md text-secondary">Estimated Shipping</span><span class="font-body-md text-on-surface">Free</span></div>
+          <div class="summary-row"><span class="font-body-md text-secondary">Tax (8%)</span><span class="font-body-md text-on-surface">{{ tax | currency }}</span></div>
+          <div class="summary-total"><span class="font-h3 text-on-surface">Total</span><span class="font-h3 text-on-surface" style="color: var(--primary);">{{ total | currency }}</span></div>
+        </div>
+        <button class="checkout-btn" routerLink="/checkout">Proceed to Checkout</button>
+        <div class="payment-methods">
+          <p class="font-body-sm text-secondary">Accepted Payments</p>
+          <div class="payment-icons">
+            <span class="material-symbols-outlined">credit_card</span>
+            <span class="material-symbols-outlined">account_balance_wallet</span>
+            <span class="material-symbols-outlined">payments</span>
+          </div>
+        </div>
+      </section>
+      <div class="concierge-card">
+        <span class="material-symbols-outlined text-primary">auto_awesome</span>
+        <div>
+          <p class="font-body-sm text-on-surface" style="font-weight: 600; margin:0;">Luxury Concierge Included</p>
+          <p class="font-body-sm text-secondary" style="margin:0;">Every purchase includes complimentary shipping insurance and personal sizing consultation.</p>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <ng-template #emptyCart>
+    <section style="text-align: center; padding: 64px 24px; background: white; border-radius: 16px; border: 1px dashed var(--outline-variant);">
+      <span class="material-symbols-outlined" style="font-size: 48px; color: var(--outline-variant); margin-bottom: 16px;">shopping_bag</span>
+      <h3 class="font-h3 text-on-surface mb-sm">Your cart is empty.</h3>
+      <p class="text-secondary mb-xl">Discover our latest collections and essentials.</p>
+      <button class="btn btn-primary" routerLink="/shop">Explore Shop</button>
+    </section>
+  </ng-template>
+</main>
