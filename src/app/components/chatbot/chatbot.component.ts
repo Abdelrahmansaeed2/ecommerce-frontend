@@ -28,6 +28,7 @@ interface Message {
 })
 export class ChatbotComponent implements OnInit, AfterViewChecked {
   @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
+  @ViewChild('chatInput') private chatInput!: ElementRef;
 
   isChatOpen: boolean = false;
   userInput: string = '';
@@ -60,7 +61,12 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   toggleChat() {
     this.isChatOpen = !this.isChatOpen;
     if (this.isChatOpen) {
-      setTimeout(() => this.scrollToBottom(), 100);
+      setTimeout(() => {
+        this.scrollToBottom();
+        if (this.chatInput) {
+          this.chatInput.nativeElement.focus();
+        }
+      }, 100);
     }
   }
 
@@ -120,6 +126,13 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     } finally {
       this.isLoading = false;
       this.cdr.detectChanges();
+      
+      // Auto-focus the input field so user can type immediately
+      setTimeout(() => {
+        if (this.chatInput) {
+          this.chatInput.nativeElement.focus();
+        }
+      }, 0);
     }
   }
 

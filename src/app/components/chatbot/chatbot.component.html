@@ -58,6 +58,7 @@
     <form class="chat-input-container" (ngSubmit)="sendMessage()">
       <div class="chat-input-group">
         <input 
+          #chatInput
           class="chat-input" 
           name="userInput"
           [(ngModel)]="userInput"
