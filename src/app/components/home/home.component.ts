@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product.service';
@@ -15,10 +15,13 @@ import { Product } from '../../models/product.model';
 export class HomeComponent implements OnInit {
   productService = inject(ProductService);
   cartService = inject(CartService);
-  trendingProducts: Product[] = [];
+  trendingProducts = signal<Product[]>([]);
 
   ngOnInit() {
-    this.trendingProducts = this.productService.getProducts().slice(0, 2);
+    this.productService.getProducts().subscribe((data) => {
+      console.log(data)
+      this.trendingProducts.set(data.slice(0, 2));
+    })
   }
 
   addToCart(product: Product, event: Event) {

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../services/product.service';
@@ -17,16 +17,39 @@ export class ShopComponent implements OnInit {
   cartService = inject(CartService);
   route = inject(ActivatedRoute);
   
-  products: Product[] = [];
+  products = signal<Product[]>([]);
   searchQuery = '';
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
+      this.route.queryParams.subscribe(params => {
       this.searchQuery = params['q'] || '';
-      this.products = this.productService.searchProducts(this.searchQuery);
-    });
+      console.log(this.searchQuery)
+      if(this.searchQuery !=''){
+      this.productService.getProducts().subscribe((data) => {
+        const filtered = data.filter(p =>
+          p.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          p.category.toLowerCase().includes(this.searchQuery.toLowerCase())
+        )
+        this.products.set(filtered);
+      });
+    }
+      else{
+        this.productService.getProducts().subscribe((data) => {
+        console.log(data)
+      
+        this.products.set(data);
+      });
+      
+    }
+     });
+    
   }
 
+  onSearch() {
+  this.productService.searchProducts(this.searchQuery).subscribe((data) => {
+    this.products.set(data);
+  });
+}
   addToCart(product: Product, event: Event) {
     event.stopPropagation();
     this.cartService.addToCart(product);

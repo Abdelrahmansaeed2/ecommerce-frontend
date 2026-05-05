@@ -1,21 +1,21 @@
-@if(product){
+@if(product()){
 <main class="app-container">
   <nav class="breadcrumbs text-body-sm">
     <a class="breadcrumb-link" routerLink="/shop">Shop</a>
     <span class="material-symbols-outlined fs-6">chevron_right</span>
     <a class="breadcrumb-link" routerLink="/shop"
-      [queryParams]="{q: product.category}">{{product.category}}</a>
+      [queryParams]="{q: product().category}">{{product().category}}</a>
     <span class="material-symbols-outlined fs-6">chevron_right</span>
-    <span class="breadcrumb-current">{{product.name}}</span>
+    <span class="breadcrumb-current">{{product().name}}</span>
   </nav>
 
   <article class="product-grid">
     <figure class="gallery-container">
       <div class="gallery-main-image">
-        <img [alt]="product.name" [src]="product.image" />
+        <img [alt]="product().name" [src]="product().image" />
       </div>
       <menu class="gallery-thumbnails">
-        <li class="gallery-thumb"><img [src]="product.image" /></li>
+        <li class="gallery-thumb"><img [src]="product().image" /></li>
         <li class="gallery-thumb"><img
             src="https://placeholder.pics/svg/300/e6eeff/0058be-Lifestyle" /></li>
         <li class="gallery-thumb"><img
@@ -31,7 +31,7 @@
     <section class="product-info-container">
       <header class="product-header">
         <h1 class="text-h1 spec-title mb-2"
-          >{{product.name}}</h1>
+          >{{product().name}}</h1>
         <div class="product-rating">
           <div class="stars">
             <span class=" fs-5 material-symbols-outlined" data-weight="fill"
@@ -42,7 +42,7 @@
               >star</span>
             <span class=" fs-5 material-symbols-outlined" data-weight="fill"
               >star</span>
-              @if(product.rating == 5){
+              @if(product().rating == 5){
             <span class="material-symbols-outlined fs-5"
                data-weight="fill">star</span>
               }
@@ -50,15 +50,15 @@
             <span class="material-symbols-outlined fs-5"
               >star_half</span>
               }
-            <span class="rating-text text-body-sm">{{product.rating}} (128
+            <span class="rating-text text-body-sm">{{product().rating}} (128
               reviews)</span>
           </div>
         </div>
-        <p class="text-h2 product-price">{{product.price | currency}}</p>
+        <p class="text-h2 product-price">{{product().price | currency}}</p>
       </header>
 
       <section class="product-description-section">
-        <p class="text-body-lg product-description">{{product.description}}
+        <p class="text-body-lg product-description">{{product().description}}
           Experience the pinnacle of comfort and minimalist design, crafted for
           the modern home.</p>
         <ul class="feature-list text-body-md">
@@ -177,7 +177,7 @@
       <section class="reviews-summary">
         <h2 class="text-h2 reviews-title">Customer Reviews</h2>
         <div class="reviews-score-container">
-          <span class="reviews-score">{{product.rating}}</span>
+          <span class="reviews-score">{{product().rating}}</span>
           <div>
             <div class="stars mb-1">
               <span class="fs-4 material-symbols-outlined" data-weight="fill"

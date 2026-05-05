@@ -26,7 +26,7 @@
   <section class="mb-xl">
       <h2 class="font-h2 text-on-surface mb-xl">Trending Now</h2>
       <div class="trending-grid">
-        @for(product of trendingProducts;track product.id){
+        @for(product of trendingProducts();track product.id){
           <article class="product-card" [routerLink]="['/product', product.id]">
               <figure class="product-image-container">
                   <img [alt]="product.name" class="product-image" [src]="product.image"/>

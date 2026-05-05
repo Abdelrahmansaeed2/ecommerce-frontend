@@ -96,7 +96,7 @@
       <section class="summary-panel">
         <h3 class="summary-title">Order Summary</h3>
         <div class="cart-items">
-          @for( item of cart$ | async;track item.product.id){
+          @for( item of cart;track item.product.id){
           <article class="cart-item">
             <figure class="item-image"><img [src]="item.product.image"/></figure>
             <div class="item-details"><p class="item-name">{{item.product.name}}</p><p class="item-meta">Qty: {{item.quantity}}</p><p class="item-price">{{item.product.price | currency}}</p></div>

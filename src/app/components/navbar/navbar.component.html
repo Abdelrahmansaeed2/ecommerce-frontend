@@ -8,7 +8,7 @@
           </nav>
       </section>
       <menu class="nav-actions">
-          <form class="search-box">
+          <form class="search-box" (submit)="onSubmit($event)">
              <span class="material-symbols-outlined search-icon">search</span>
              <input #searchInput (keyup.enter)="onSearch(searchInput.value)" type="text" placeholder="Search aesthetics..." class="search-input">
           </form>

@@ -11,6 +11,9 @@ import { CartService } from '../../services/cart.service';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+onSubmit(event : Event) {
+  event.preventDefault()
+}
   cartService = inject(CartService);
   router = inject(Router);
   

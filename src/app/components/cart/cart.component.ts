@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { CartService } from './../../services/cart.service';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { CartService } from '../../services/cart.service';
+import { CartItem } from '../../models/product.model';
 
 @Component({
   selector: 'app-cart',
@@ -12,7 +13,11 @@ import { CartService } from '../../services/cart.service';
 })
 export class CartComponent {
   cartService = inject(CartService);
-  cart$ = this.cartService.cart$;
+  cart = this.cartService.cart
+  ngOnInit(){
+      this.cartService.loadCart();
+  }
+
 
   inc(id: string, current: number) { this.cartService.updateQuantity(id, current + 1); }
   dec(id: string, current: number) { this.cartService.updateQuantity(id, current - 1); }

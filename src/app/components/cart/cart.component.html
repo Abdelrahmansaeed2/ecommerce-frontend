@@ -4,10 +4,10 @@
     <p class="page-subtitle">Refined essentials curated for your unique perspective. Review your selection before finalizing your acquisition.</p>
   </header>
 
-  @if((cart$ | async)?.length){
+  @if(cart().length){
   <section class="layout-grid">
     <section class="layout-main-col">
-      @for(item of cart$ | async;track item.product.id){
+      @for(item of cart();track item.product.id){
       <article class="cart-item">
         <figure class="cart-item-image-container" [routerLink]="['/product', item.product.id]" style="cursor: pointer;">
           <img class="cart-item-img" [src]="item.product.image"/>
