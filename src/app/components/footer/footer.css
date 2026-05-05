@@ -1,0 +1,27 @@
+.footer-link {
+  font-size: 13px;
+  color: var(--outline);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: all 0.3s;
+}
+
+.footer-link:hover {
+  color: var(--on-surface);
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}
+
+.footer-text {
+  font-size: 13px;
+  color: var(--outline);
+  letter-spacing: 0.05em;
+}
+
+.hover-primary:hover {
+  color: var(--primary) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

@@ -1,0 +1,27 @@
+.bg-primary-fixed {
+  background-color: var(--primary-fixed);
+}
+
+.text-on-primary-fixed {
+  color: var(--on-primary-fixed);
+}
+
+.text-on-primary-fixed-variant {
+  color: var(--on-primary-fixed-variant);
+}
+
+.max-w-2xl {
+  max-width: 42rem;
+}
+
+.max-w-md {
+  max-width: 28rem;
+}
+
+.z-1 {
+  z-index: 1;
+}
+
+.mail-icon-bg {
+  transform: translate(25%, 25%);
+}

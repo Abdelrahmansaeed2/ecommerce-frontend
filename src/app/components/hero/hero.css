@@ -1,0 +1,38 @@
+.hero-container {
+  height: 640px;
+  transition: transform 0.7s ease;
+}
+
+.hero-container:hover {
+  transform: scale(1.005);
+}
+
+.hero-image {
+  object-fit: cover;
+}
+
+.max-w-xl {
+  max-width: 36rem;
+}
+
+.max-w-md {
+  max-width: 28rem;
+}
+
+.tracking-widest {
+  letter-spacing: 0.2em;
+}
+
+.btn-secondary-custom {
+  background-color: var(--secondary-container);
+  color: var(--on-secondary-container);
+  border-radius: 9999px;
+  padding: 12px 32px;
+  border: none;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.btn-secondary-custom:hover {
+  background-color: var(--surface-container-high);
+}

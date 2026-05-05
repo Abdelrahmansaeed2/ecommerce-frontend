@@ -1,0 +1,51 @@
+.aspect-ratio-box {
+  position: relative;
+  width: 100%;
+  padding-top: 125%; 
+}
+
+.aspect-ratio-box img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.7s ease;
+}
+
+.product-card:hover .aspect-ratio-box img {
+  transform: scale(1.05);
+}
+
+.favorite-btn {
+  width: 40px;
+  height: 40px;
+  color: var(--on-surface-variant);
+  transition: color 0.3s;
+  z-index: 10;
+}
+
+.favorite-btn:hover {
+  color: var(--error) !important;
+}
+
+.add-to-cart-btn {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.3s ease;
+}
+
+.product-card:hover .add-to-cart-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn-outline-primary-custom {
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  background-color: transparent;
+  transition: all 0.3s;
+}
+
+.btn-outline-primary-custom:hover {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}

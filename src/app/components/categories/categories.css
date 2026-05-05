@@ -1,0 +1,29 @@
+
+.icon-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--surface-container-low);
+  transition: background-color 0.5s ease;
+}
+
+.icon-circle span {
+  transition: color 0.5s ease;
+}
+
+.category-item:hover .icon-circle {
+  background-color: var(--primary-fixed);
+}
+
+.category-item:hover .icon-circle span {
+  color: var(--primary) !important;
+}
+
+.category-item {
+  cursor: pointer;
+}
+
+.hover-underline:hover {
+  text-decoration: underline !important;
+  text-underline-offset: 4px;
+}

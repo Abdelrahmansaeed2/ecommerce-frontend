@@ -1,0 +1,19 @@
+.fixed-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  z-index: 1000;
+  transition: all 0.3s;
+  border: none;
+}
+
+.fixed-fab:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px -5px rgba(0, 75, 186, 0.4) !important;
+}
+
+main {
+  min-height: calc(100vh - 80px);
+}

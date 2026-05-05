@@ -1,1 +1,18 @@
-<router-outlet></router-outlet>
+<app-navbar></app-navbar>
+
+<main>
+  <app-hero></app-hero>
+  <app-categories></app-categories>
+  <app-featured-products></app-featured-products>
+  <app-journal></app-journal>
+  <app-newsletter></app-newsletter>
+</main>
+
+<app-footer></app-footer>
+
+<!-- Floating Chatbot FAB -->
+<button class="fixed-fab btn btn-primary-color rounded-circle shadow-lg d-flex align-items-center justify-content-center p-0">
+  <span class="material-symbols-outlined fs-3 text-white">chat_bubble</span>
+</button>
+
+<router-outlet />
