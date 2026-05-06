@@ -1,30 +1,86 @@
 <aside class="chat-widget">
-  @if(isChatOpen){
-  <section class="chat-window">
+  <section class="chat-window" *ngIf="isChatOpen">
     <header class="chat-header">
-      <div class="chat-title-group"><div
-          class="chat-status-indicator"></div><span>LUXE Assistant</span></div>
-      <button class="chat-close-action" (click)="toggleChat()"><span
-          class="material-symbols-outlined">close</span></button>
+      <div class="chat-title-group">
+        <div class="chat-status-indicator"></div>
+        <div class="chat-header-text">
+          <span class="chat-title">LUXE AI Assistant</span>
+          <span class="chat-subtitle">Personal Shopper</span>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button class="chat-icon-btn" (click)="clearChat()" title="Clear Chat">
+          <span class="material-symbols-outlined">delete_sweep</span>
+        </button>
+        <button class="chat-icon-btn" (click)="toggleChat()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
     </header>
-    <ul class="chat-messages">
-      <li class="chat-message bot"><div class="chat-avatar"><span
-            class="material-symbols-outlined">smart_toy</span></div><div
-          class="chat-bubble">
-          <p class="m-0">Hello! Welcome to
-            LUXE.
-          </p>
+
+    <div class="chat-messages" #scrollMe>
+      <div *ngFor="let msg of messages" [ngClass]="['chat-message', msg.role]">
+        <div class="chat-avatar" *ngIf="msg.role === 'assistant'">
+          <span class="material-symbols-outlined">smart_toy</span>
+        </div>
+        <div class="chat-bubble">
+          <p>{{ msg.text }}</p>
+          
+          <div class="chat-actions" *ngIf="msg.actions && msg.actions.length > 0">
+            <button 
+              *ngFor="let action of msg.actions" 
+              (click)="handleAction(action)"
+              [class]="'action-btn ' + action.type"
+            >
+              <span class="material-symbols-outlined">
+                {{ action.type === 'view' ? 'visibility' : 'add_shopping_cart' }}
+              </span>
+              {{ action.label }}
+            </button>
           </div>
-       </li>
-    </ul>
-    <form class="chat-input-container " (submit)="handleSubmit($event)" >
-      <div class="chat-input-group"><input class="chat-input"
-          placeholder="Type message..." type="text" /><button
-          class="chat-send-action"><span class="material-symbols-outlined"
-            style="font-variation-settings: 'FILL' 1;">send</span></button></div>
+
+          <span class="chat-time">{{ msg.timestamp | date:'shortTime' }}</span>
+        </div>
+      </div>
+
+      <div class="chat-message assistant" *ngIf="isLoading">
+        <div class="chat-avatar">
+          <span class="material-symbols-outlined">smart_toy</span>
+        </div>
+        <div class="chat-bubble loading">
+          <div class="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form class="chat-input-container" (ngSubmit)="sendMessage()">
+      <div class="chat-input-group">
+        <input 
+          #chatInput
+          class="chat-input" 
+          name="userInput"
+          [(ngModel)]="userInput"
+          placeholder="Ask about products, styles..." 
+          type="text"
+          autocomplete="off"
+          [disabled]="isLoading"
+        />
+        <button class="chat-send-action" type="submit" [disabled]="!userInput.trim() || isLoading">
+          <span class="material-symbols-outlined">send</span>
+        </button>
+      </div>
     </form>
   </section>
-  }
-  <button class="chat-fab" (click)="toggleChat()"><span
-      class="material-symbols-outlined chat-fab-icon">chat_bubble</span></button>
+
+  <button 
+    class="chat-fab" 
+    [ngClass]="{'active': isChatOpen}"
+    (click)="toggleChat()"
+    aria-label="Toggle Chat"
+  >
+    <span class="material-symbols-outlined chat-fab-icon">{{ isChatOpen ? 'close' : 'chat' }}</span>
+    <span class="chat-badge" *ngIf="!isChatOpen">1</span>
+  </button>
 </aside>
