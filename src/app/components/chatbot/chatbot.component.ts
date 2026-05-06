@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, OnInit, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AiService } from '../../services/ai.service';
@@ -155,22 +156,26 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     return { cleanText, actions };
   }
 
-  handleAction(action: MessageAction) {
+  async handleAction(action: MessageAction) {
     if (action.type === 'view') {
       this.router.navigate(['/product', action.id]);
       this.isChatOpen = false; // Close chat on navigation
     } else if (action.type === 'add') {
-      const product = this.productService.getProductById(action.id);
-      if (product) {
-        this.cartService.addToCart(product);
-        // Maybe show a small feedback in chat?
-        const feedback: Message = {
-          role: 'assistant',
-          text: `Added ${product.name} to your cart! 🛍️`,
-          timestamp: new Date()
-        };
-        this.messages.push(feedback);
-        this.saveMessages();
+      try {
+        const product = await firstValueFrom(this.productService.getProductById(action.id));
+        if (product) {
+          this.cartService.addToCart(product);
+          // Maybe show a small feedback in chat?
+          const feedback: Message = {
+            role: 'assistant',
+            text: `Added ${product.name} to your cart! 🛍️`,
+            timestamp: new Date()
+          };
+          this.messages.push(feedback);
+          this.saveMessages();
+        }
+      } catch (error) {
+        console.error('Failed to add product:', error);
       }
     }
   }

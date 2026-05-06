@@ -14,8 +14,7 @@ export class ProductService {
 
   
   getProductById(id: string) {  
-    let prod;
-    this.getProducts()
+    return this.http.get<Product>(`${this.apiUrl}/products/${id}`);
   }
   searchProducts(query: string) {
     console.log("Query", query)

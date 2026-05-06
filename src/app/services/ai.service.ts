@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ProductService } from './product.service';
+import { firstValueFrom } from 'rxjs';
+import { Product } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +14,7 @@ export class AiService {
 
   constructor(private productService: ProductService) {}
 
-  private getSystemPrompt(): string {
-    const products = this.productService.getProducts();
+  private getSystemPrompt(products: Product[]): string {
     const productContext = products.map(p => 
       `- ${p.name} (${p.category}): $${p.price}. ${p.description} (Rating: ${p.rating}/5)`
     ).join('\n');
@@ -48,8 +49,9 @@ Always refer to these products when asked for recommendations.`;
 
   async getChatResponse(userMessage: string, history: { role: 'user' | 'assistant', content: string }[] = []) {
     try {
+      const products = await firstValueFrom(this.productService.getProducts());
       const messages = [
-        { role: 'system', content: this.getSystemPrompt() },
+        { role: 'system', content: this.getSystemPrompt(products) },
         ...history,
         { role: 'user', content: userMessage }
       ];
