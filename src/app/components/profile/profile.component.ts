@@ -1,7 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Order } from './../../services/orderHistory.service';
+import { AuthService } from './../../services/auth.service';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { User } from '../../models/user.model';
+import { OrderHistoryService } from '../../services/orderHistory.service';
 
 @Component({
   selector: 'app-profile',
@@ -15,13 +19,13 @@ export class ProfileComponent implements OnInit {
 
   activeTab = 'personal';
   isEditing = false;
-
-  user = {
-    name: 'Abd Elrahman Saeed',
-    email: 'abdelrahman@example.com',
-    phone: '+20 123 456 7890'
-  };
-
+  auth = inject(AuthService)
+  orderHistory = inject(OrderHistoryService)
+  user= signal<User>( {
+    name: "",
+    email: ""
+  });
+  orders : Order[] = [];
   addresses = [
     { id: 1, type: 'Home', line1: '123 Minimalist Way, Apt 4B', city: 'Cairo', country: 'Egypt', isDefault: true },
     { id: 2, type: 'Office', line1: '456 Tech Park', city: 'Alexandria', country: 'Egypt', isDefault: false }
@@ -29,6 +33,16 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     const token = localStorage.getItem('token');
+    const u = this.auth.getUserData().subscribe((data) => {
+      console.log("data", data)
+      this.user.set(data[0])
+    })
+    
+    this.orderHistory.getOrders().subscribe((data) => {
+      this.orders = data
+    })
+    console.log(this.orders)
+    console.log(this.user)
     if (!token) {
       this.router.navigate(['/login']);
     }
@@ -40,7 +54,7 @@ export class ProfileComponent implements OnInit {
 
   saveProfile() {
     this.isEditing = false;
-    alert('Profile updated successfully!');
+    this.auth.updateUser(this.user())
   }
 
   deleteAddress(id: number) {

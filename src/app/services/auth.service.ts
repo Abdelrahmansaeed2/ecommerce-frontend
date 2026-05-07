@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { from, Observable, map, switchMap, throwError } from 'rxjs';
 import { User } from '../models/user.model';
 import * as bcrypt from 'bcryptjs';
+import { email } from '@angular/forms/signals';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,8 @@ import * as bcrypt from 'bcryptjs';
 export class AuthService {
   private apiUrl = 'http://localhost:3000';
   private secretKey = 'your-secret-key'; // In production, use environment variable
-
+  private user : User = { name: "", email: ""}
+  private id : string = ''
   constructor(private http: HttpClient) {}
 
   private base64UrlEncode(value: string | Uint8Array): string {
@@ -59,6 +61,9 @@ export class AuthService {
           map((token) => {
             localStorage.setItem('authToken', token);
             localStorage.setItem('User', user.email);
+            this.user.name = user.name;
+            this.user.email = user.email;
+            this.id = user.id?.toString() || '' 
             return user;
           }),
         );
@@ -93,10 +98,21 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('authToken');
-
   }
 
   getToken(): string | null {
     return localStorage.getItem('authToken');
+  }
+
+  getUserData(){
+    return this.http.get<User[]>(`${this.apiUrl}/users?email=${localStorage.getItem("User")}`)
+  
+  }
+  updateUser(user: User) {
+        this.http.patch(`${this.apiUrl}/users/${this.id}`,{
+            name: user.name,
+            email: user.email
+        }).subscribe();
+
   }
 }

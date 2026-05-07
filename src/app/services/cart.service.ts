@@ -7,7 +7,7 @@ export class CartService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000';
   private items: CartItem[] = [];
-  private cartRecordId: string | null = null;
+  public cartRecordId: string | null = null;
   cart = signal<CartItem[]>([]);
 
   private getUserEmail(): string | null {
@@ -16,6 +16,7 @@ export class CartService {
   }
 
   private syncCart() {
+    console.log(this.cartRecordId)
     if (this.cartRecordId) {
       this.http.put(`${this.apiUrl}/cart/${this.cartRecordId}`, { id: this.cartRecordId, email: this.getUserEmail(), items: this.items }).subscribe(
         (data) => console.log(data)
@@ -35,6 +36,7 @@ export class CartService {
     this.http.get<any[]>(`${this.apiUrl}/cart?email=${email}`).subscribe(carts => {
       if (carts.length > 0) {
         this.cartRecordId = carts[0].id;
+        console.log(this.cartRecordId)
         this.items = carts[0].items;
         this.cart.set([...this.items]);
       }
@@ -63,10 +65,15 @@ export class CartService {
   }
 
   clearCart() {
+    const email = this.getUserEmail();
     this.items = [];
-    this.cartRecordId = null;
     this.cart.set([]);
-    this.syncCart();
+    this.http.get<any[]>(`${this.apiUrl}/cart?email=${email}`).subscribe(carts => {
+      if (carts.length > 0) {
+        this.cartRecordId = carts[0].id;
+      }
+      this.http.delete(`${this.apiUrl}/cart/${this.cartRecordId}`).subscribe();
+    });
   }
 
   getSubtotal() { return this.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0); }

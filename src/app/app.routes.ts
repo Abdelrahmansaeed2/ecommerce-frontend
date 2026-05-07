@@ -1,3 +1,4 @@
+import {  PaymentResultComponent } from './components/payment-result/payment-result';
 import { Routes } from '@angular/router';
 import { CartComponent } from './components/cart/cart.component';
 import { CheckoutComponent } from './components/checkout/checkout.component';
@@ -21,7 +22,8 @@ export const routes: Routes = [
   { path: 'cart', component: CartComponent, canActivate: [AuthGuard] },
   { path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
-
+    { path: 'payment-result', component: PaymentResultComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];
+

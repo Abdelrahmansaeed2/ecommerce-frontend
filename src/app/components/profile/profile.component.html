@@ -8,8 +8,8 @@
                   {{ user.name.charAt(0) }}
               </figure>
               <div>
-                  <h2 class="font-h3 text-h3 text-on-surface m-0">{{ user.name }}</h2>
-                  <p class="font-body-sm text-body-sm text-on-surface-variant m-0">{{ user.email }}</p>
+                  <h2 class="font-h3 text-h3 text-on-surface m-0">{{ user().name }}</h2>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant m-0">{{ user().email }}</p>
               </div>
           </header>
           <nav class="flex flex-col gap-xs">
@@ -37,35 +37,29 @@
               <h2 class="font-h2 text-h2 text-on-surface mb-md">Personal Information</h2>
 
               @if(!isEditing){
-              <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-lg border-0 p-0 m-0" >
+              <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-lg border-0 p-0 m-0 mb-2" >
                   <p class="flex flex-col gap-xs m-0">
                       <label class="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
-                      <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user.name }}</span>
+                      <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user().name }}</span>
                   </p>
                   <p class="flex flex-col gap-xs m-0">
                       <label class="font-label-caps text-label-caps text-on-surface-variant">Email Address</label>
-                      <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user.email }}</span>
+                      <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user().email }}</span>
                   </p>
-                  <p class="flex flex-col gap-xs m-0">
-                      <label class="font-label-caps text-label-caps text-on-surface-variant">Phone Number</label>
-                      <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user.phone }}</span>
-                  </p>
+                  
               </fieldset>
             }
             @else{
-              <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-lg border-0 p-0 m-0" *ngIf="isEditing">
+              <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-lg border-0 p-0 m-0 mb-2">
                   <p class="flex flex-col gap-xs m-0">
                       <label class="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
-                      <input [(ngModel)]="user.name" class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white outline-none focus:border-primary" />
+                      <input [(ngModel)]="user().name" class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white outline-none focus:border-primary" />
                   </p>
                   <p class="flex flex-col gap-xs m-0">
                       <label class="font-label-caps text-label-caps text-on-surface-variant">Email Address</label>
-                      <input [(ngModel)]="user.email" class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white outline-none focus:border-primary" />
+                      <input [(ngModel)]="user().email" class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white outline-none focus:border-primary" />
                   </p>
-                  <p class="flex flex-col gap-xs m-0">
-                      <label class="font-label-caps text-label-caps text-on-surface-variant">Phone Number</label>
-                      <input [(ngModel)]="user.phone" class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white outline-none focus:border-primary" />
-                  </p>
+                 
               </fieldset>
             }
 
@@ -111,8 +105,39 @@
             <h2 class="font-h2 text-h2 text-on-surface mb-md">Order History</h2>
             <div class="text-center py-xl text-on-surface-variant">
                <span class="material-symbols-outlined text-4xl mb-sm fs-1">receipt_long</span>
-               <p>No past orders found.</p>
             </div>
+            <article class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+  <h2 class="font-h2 text-h2 text-on-surface mb-md">Order History</h2>
+
+  @if (orders.length > 0) {
+    @for (order of orders; track order.email) {
+      <div class="border border-outline-variant/30 rounded-lg p-md mb-sm">
+        
+        <div class="flex justify-between items-center mb-sm">
+          <span class="text-on-surface font-medium">{{ order.amountEGP }} EGP</span>
+          <span [class]="order.success
+            ? 'text-green-600 bg-green-100 px-2 py-0.5 rounded-full text-sm'
+            : 'text-red-600 bg-red-100 px-2 py-0.5 rounded-full text-sm'">
+            {{ order.success ? 'Successful' : 'Failed' }}
+          </span>
+        </div>
+
+        <ul class="text-sm space-y-1 text-on-surface-variant">
+          @for (item of order.items; track item.item) {
+            <li>{{ item.item }} &times; {{ item.quantity }}</li>
+          }
+        </ul>
+
+      </div>
+    }
+  } @else {
+    <div class="text-center py-xl text-on-surface-variant">
+      <span class="material-symbols-outlined text-4xl mb-sm fs-1">receipt_long</span>
+      <p>No orders yet</p>
+    </div>
+  }
+
+</article>
         </article>
     }
       <!-- Order History Tab -->

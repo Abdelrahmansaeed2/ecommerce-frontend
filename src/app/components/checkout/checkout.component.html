@@ -30,13 +30,33 @@
           <div class="section-icon"><span class="material-symbols-outlined">local_shipping</span></div>
           <h2 class="section-title">Shipping Information</h2>
         </header>
-        <fieldset class="form-grid border-0 p-0 m-0">
-          <p class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="Enter first name" type="text"/></p>
-          <p class="form-group"><label class="form-label">Last Name</label><input class="form-input" placeholder="Enter last name" type="text"/></p>
-          <p class="form-group full-width"><label class="form-label">Street Address</label><input class="form-input" placeholder="123 Luxury Ave, Suite 400" type="text"/></p>
-          <p class="form-group"><label class="form-label">City</label><input class="form-input" placeholder="New York" type="text"/></p>
-          <p class="form-group"><label class="form-label">Postal Code</label><input class="form-input" placeholder="10001" type="text"/></p>
-        </fieldset>
+          <fieldset class="form-grid border-0 p-0 m-0">
+      <p class="form-group">
+        <label class="form-label">First Name</label>
+        <input class="form-input" placeholder="Enter first name" type="text"
+               [(ngModel)]="billing.firstName" name="firstName"/>
+      </p>
+      <p class="form-group">
+        <label class="form-label">Last Name</label>
+        <input class="form-input" placeholder="Enter last name" type="text"
+               [(ngModel)]="billing.lastName" name="lastName"/>
+      </p>
+      <p class="form-group full-width">
+        <label class="form-label">Street Address</label>
+        <input class="form-input" placeholder="123 Luxury Ave, Suite 400" type="text"
+               [(ngModel)]="billing.street" name="street"/>
+      </p>
+      <p class="form-group">
+        <label class="form-label">City</label>
+        <input class="form-input" placeholder="New York" type="text"
+               [(ngModel)]="billing.city" name="city"/>
+      </p>
+      <p class="form-group">
+        <label class="form-label">Postal Code</label>
+        <input class="form-input" placeholder="10001" type="text"
+               [(ngModel)]="billing.postalCode" name="postalCode"/>
+      </p>
+    </fieldset>
       </section>
 
       <section class="form-section">
@@ -75,19 +95,7 @@
           </label>
         </fieldset>
         @if(selectedPayment === 'card'){
-        <section class="card-details-panel">
-          <fieldset class="card-details-grid border-0 p-0 m-0">
-            <p class="form-group full-width">
-              <label class="form-label">Card Number</label>
-              <span class="input-with-icon">
-                <input class="form-input" placeholder="0000 0000 0000 0000" class=" pe-5" type="text"/>
-                <span class="material-symbols-outlined input-icon">credit_card</span>
-              </span>
-            </p>
-            <p class="form-group"><label class="form-label">Expiry Date</label><input class="form-input" placeholder="MM/YY" type="text"/></p>
-            <p class="form-group"><label class="form-label">CVC</label><input class="form-input" placeholder="***" type="password"/></p>
-          </fieldset>
-        </section>
+       
       }
       </section>
     </div>

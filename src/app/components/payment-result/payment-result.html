@@ -1,0 +1,25 @@
+
+    <div class="result-container">
+      @if(success){
+      <ng-container>
+        <div class="result success">
+          <span class="icon">✅</span>
+          <h2>Payment Successful</h2>
+          <p>Transaction ID: <code>{{ transactionId }}</code></p>
+          <p>Order ID: <code>{{ orderId }}</code></p>
+          <p>Amount: <code>{{ amount }} EGP</code></p>
+        </div>
+      </ng-container>
+    }
+    @else{
+      <ng-template #failure>
+        <div class="result failure">
+          <span class="icon">❌</span>
+          <h2>Payment Failed</h2>
+          <p>Something went wrong. Please try again.</p>
+        </div>
+      </ng-template>
+    }
+      <a routerLink="/">← Go back</a>
+    </div>
+

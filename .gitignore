@@ -9,7 +9,10 @@
 # Node
 /node_modules
 npm-debug.log
+.env
 yarn-error.log
+/Backend/node_modules
+
 
 # IDEs and editors
 .idea/
