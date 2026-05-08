@@ -1,0 +1,23 @@
+/* Ensure the html and body take up 100% height */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Full height of the screen */
+}
+
+.content-area {
+  flex: 1; /* This pushes the footer down by taking up all available space */
+}
+
+/* Optional: If your chatbot is fixed/floating, ensure it doesn't overlap */
+app-chatbot {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+}

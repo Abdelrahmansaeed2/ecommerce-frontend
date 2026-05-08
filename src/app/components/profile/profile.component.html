@@ -1,25 +1,38 @@
-<main class="flex-grow pt-12 pb-xxl max-w-container-max mx-auto w-full px-gutter md:px-lg grid grid-cols-1 md:grid-cols-4 gap-xl">
+<main class="flex-grow pt-6 md:pt-12 pb-xl max-w-container-max mx-auto w-full px-4 md:px-lg grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-xl">
 
-  <!-- Sidebar -->
-  <aside class="md:col-span-1 flex flex-col gap-sm">
-      <section class="bg-surface-container-lowest rounded-xl p-md shadow-sm mb-lg border border-outline-variant/30">
-          <header class="flex items-center gap-md mb-lg">
-              <figure class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center text-2xl font-bold m-0">
-                  {{ user.name.charAt(0) }}
+  <!-- Sidebar: Now Sticky and Vertically Scrollable -->
+  <aside class="md:col-span-1">
+      <section class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-outline-variant/30 sticky top-24 max-h-[calc(100vh-120px)] flex flex-col">
+          
+          <!-- Fixed Header in Sidebar -->
+          <header class="flex items-center gap-md mb-6 md:mb-lg shrink-0">
+              <figure class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary text-white flex items-center justify-center text-xl md:text-2xl font-bold m-0">
+                  {{ user().name.charAt(0) }}
               </figure>
-              <div>
-                  <h2 class="font-h3 text-h3 text-on-surface m-0">{{ user().name }}</h2>
-                  <p class="font-body-sm text-body-sm text-on-surface-variant m-0">{{ user().email }}</p>
+              <div class="overflow-hidden">
+                  <h2 class="font-h3 text-h3 text-on-surface m-0 truncate">{{ user().name }}</h2>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant m-0 truncate">{{ user().email }}</p>
               </div>
           </header>
-          <nav class="flex flex-col gap-xs">
-              <button (click)="activeTab = 'personal'" [class.bg-surface-variant]="activeTab === 'personal'" [class.text-on-surface]="activeTab === 'personal'" class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-button text-button w-full text-left">
+
+          <!-- Vertical Scrollable Navigation Area -->
+          <nav class="flex flex-col gap-xs overflow-y-auto pr-2 custom-scrollbar">
+              <button (click)="activeTab = 'personal'" 
+                [class.bg-surface-variant]="activeTab === 'personal'" 
+                [class.text-on-surface]="activeTab === 'personal'" 
+                class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-button text-button w-full text-left">
                   <span class="material-symbols-outlined">person</span> Personal Info
               </button>
-              <button (click)="activeTab = 'orders'" [class.bg-surface-variant]="activeTab === 'orders'" [class.text-on-surface]="activeTab === 'orders'" class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-button text-button w-full text-left">
+              
+              <button (click)="activeTab = 'orders'" 
+                [class.bg-surface-variant]="activeTab === 'orders'" 
+                [class.text-on-surface]="activeTab === 'orders'" 
+                class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-button text-button w-full text-left">
                   <span class="material-symbols-outlined">receipt_long</span> Order History
               </button>
+
               <hr class="border-t border-outline-variant my-sm w-full" />
+              
               <button (click)="logout()" class="flex items-center gap-md px-md py-sm rounded-lg text-error hover:bg-error-container transition-colors font-button text-button w-full text-left">
                   <span class="material-symbols-outlined">logout</span> Logout
               </button>
@@ -27,119 +40,95 @@
       </section>
   </aside>
 
-  <!-- Content -->
+  <!-- Content Section -->
   <section class="md:col-span-3 flex flex-col gap-lg">
-
-      <!-- Personal Info Tab -->
-       @if(activeTab == 'personal'){
-      <article >
-          <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 mb-lg">
-              <h2 class="font-h2 text-h2 text-on-surface mb-md">Personal Information</h2>
-
-              @if(!isEditing){
-              <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-lg border-0 p-0 m-0 mb-2" >
-                  <p class="flex flex-col gap-xs m-0">
-                      <label class="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
-                      <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user().name }}</span>
-                  </p>
-                  <p class="flex flex-col gap-xs m-0">
-                      <label class="font-label-caps text-label-caps text-on-surface-variant">Email Address</label>
-                      <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user().email }}</span>
-                  </p>
+      @if(activeTab == 'personal'){
+          <article>
+              <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 mb-lg">
+                  <h2 class="font-h2 text-h2 text-on-surface mb-md">Personal Information</h2>
                   
-              </fieldset>
-            }
-            @else{
-              <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-lg border-0 p-0 m-0 mb-2">
-                  <p class="flex flex-col gap-xs m-0">
-                      <label class="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
-                      <input [(ngModel)]="user().name" class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white outline-none focus:border-primary" />
-                  </p>
-                  <p class="flex flex-col gap-xs m-0">
-                      <label class="font-label-caps text-label-caps text-on-surface-variant">Email Address</label>
-                      <input [(ngModel)]="user().email" class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white outline-none focus:border-primary" />
-                  </p>
-                 
-              </fieldset>
-            }
+                  <fieldset class="grid grid-cols-1 sm:grid-cols-2 gap-lg border-0 p-0 m-0 mb-2">
+                      <div class="flex flex-col gap-xs">
+                          <label class="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
+                          @if(!isEditing){
+                            <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user().name }}</span>
+                          } @else {
+                            <input [(ngModel)]="user().name" class="w-full font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white" />
+                          }
+                      </div>
+                      <div class="flex flex-col gap-xs">
+                          <label class="font-label-caps text-label-caps text-on-surface-variant">Email Address</label>
+                          @if(!isEditing){
+                            <span class="font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">{{ user().email }}</span>
+                          } @else {
+                            <input [(ngModel)]="user().email" class="w-full font-body-md text-body-md text-on-surface p-sm border border-outline-variant rounded-lg bg-white" />
+                          }
+                      </div>
+                  </fieldset>
 
-              <menu class="mt-lg flex justify-end gap-md p-0 m-0 pt-6">
-                  @if(isEditing){
-                    <button  (click)="toggleEdit()" class="text-on-surface-variant px-md py-sm rounded-lg font-button text-button hover:bg-surface-container-highest transition-colors">Cancel</button>
-                    <button  (click)="saveProfile()" class="bg-primary text-white px-md py-sm rounded-lg font-button text-button transition-colors">Save Changes</button>
-                  }
-                  @else{
-                    <button (click)="toggleEdit()" class="bg-surface-variant text-on-surface px-md py-sm rounded-lg font-button text-button hover:bg-surface-container-highest transition-colors border border-outline-variant">Edit Details</button>
-                  }
-              </menu>
-          </section>
+                  <menu class="mt-lg flex justify-end gap-md p-0 m-0 pt-6">
+                      @if(isEditing){
+                        <button (click)="toggleEdit()" class="text-on-surface-variant px-md py-sm rounded-lg font-button hover:bg-surface-container-highest transition-colors">Cancel</button>
+                        <button (click)="saveProfile()" class="bg-primary text-white px-md py-sm rounded-lg font-button transition-colors">Save Changes</button>
+                      } @else {
+                        <button (click)="toggleEdit()" class="bg-surface-variant text-on-surface px-md py-sm rounded-lg font-button hover:bg-surface-container-highest transition-colors border border-outline-variant">Edit Details</button>
+                      }
+                  </menu>
+              </section>
 
-          <!-- Addresses -->
-          <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
-              <header class="flex justify-between items-center mb-md">
-                  <h2 class="font-h2 text-h2 text-on-surface m-0">Shipping Addresses</h2>
-                  <button (click)="addAddress()" class="text-primary hover:text-primary-container font-button text-button flex items-center gap-xs">
-                      <span class="material-symbols-outlined text-[18px]">add</span> Add New
-                  </button>
-              </header>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-                @for(address of addresses;track address.id){
-                  <address [class.border-primary]="address.isDefault" [class.bg-surface-container-low]="address.isDefault" class="border border-outline-variant rounded-lg p-md relative bg-white not-italic">
-                    @if(address.isDefault){
-                      <span class="absolute top-md right-md bg-primary text-on-primary font-label-caps text-[10px] px-2 py-1 rounded-full">DEFAULT</span>
+              <!-- Shipping Addresses -->
+              <section class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+                  <header class="flex justify-between items-center mb-md">
+                      <h2 class="font-h2 text-h2 text-on-surface m-0">Shipping Addresses</h2>
+                      <button (click)="addAddress()" class="text-primary font-button flex items-center gap-xs p-0">
+                          <span class="material-symbols-outlined text-[18px]">add</span> Add New
+                      </button>
+                  </header>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+                    @for(address of addresses; track address.id){
+                      <address [class.border-primary]="address.isDefault" class="border border-outline-variant rounded-lg p-md relative bg-white not-italic">
+                        @if(address.isDefault){
+                          <span class="absolute top-4 right-4 bg-primary text-on-primary font-label-caps text-[10px] px-2 py-1 rounded-full">DEFAULT</span>
+                        }
+                        <h3 class="font-h3 text-[16px] text-on-surface mb-xs mt-0">{{ address.type }}</h3>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant m-0">{{ address.line1 }}</p>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant m-0">{{ address.city }}, {{ address.country }}</p>
+                        <button class="mt-md text-error font-button text-sm" (click)="deleteAddress(address.id)">Delete</button>
+                      </address>
                     }
-                      <h3 class="font-h3 text-[16px] text-on-surface mb-xs mt-0">{{ address.type }}</h3>
-                      <p class="font-body-sm text-body-sm text-on-surface-variant m-0">{{ address.line1 }}</p>
-                      <p class="font-body-sm text-body-sm text-on-surface-variant m-0">{{ address.city }}, {{ address.country }}</p>
-                      <menu class="mt-md flex gap-md p-0 m-0 pt-4">
-                          <button class="text-error hover:text-on-error-container font-button text-sm transition-colors" (click)="deleteAddress(address.id)">Delete</button>
-                      </menu>
-                  </address>
+                  </div>
+              </section>
+          </article>
+      } @else {
+          <!-- Order History -->
+          <article class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+              <h2 class="font-h2 text-h2 text-on-surface mb-md">Order History</h2>
+              @if (orders.length > 0) {
+                @for (order of orders; track order.email) {
+                  <div class="border border-outline-variant/30 rounded-lg p-md mb-sm">
+                    <div class="flex justify-between items-center mb-sm">
+                      <span class="text-on-surface font-medium">{{ order.amountEGP }} EGP</span>
+                      <span [class]="order.success ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100'" class="px-2 py-0.5 rounded-full text-xs font-bold uppercase">
+                        {{ order.success ? 'Success' : 'Failed' }}
+                      </span>
+                    </div>
+                    <ul class="text-sm text-on-surface-variant list-none p-0 m-0">
+                      @for (item of order.items; track item.item) {
+                        <li class="flex justify-between py-1 border-b border-outline-variant/10">
+                          <span>{{ item.item }}</span>
+                          <span>×{{ item.quantity }}</span>
+                        </li>
+                      }
+                    </ul>
+                  </div>
                 }
-              </div>
-          </section>
-      </article>
-    }
-    @else {
-        <article class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
-            <h2 class="font-h2 text-h2 text-on-surface mb-md">Order History</h2>
-            <div class="text-center py-xl text-on-surface-variant">
-               <span class="material-symbols-outlined text-4xl mb-sm fs-1">receipt_long</span>
-            </div>
-            <article class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
-  <h2 class="font-h2 text-h2 text-on-surface mb-md">Order History</h2>
-
-  @if (orders.length > 0) {
-    @for (order of orders; track order.email) {
-      <div class="border border-outline-variant/30 rounded-lg p-md mb-sm">
-        
-        <div class="flex justify-between items-center mb-sm">
-          <span class="text-on-surface font-medium">{{ order.amountEGP }} EGP</span>
-          <span [class]="order.success
-            ? 'text-green-600 bg-green-100 px-2 py-0.5 rounded-full text-sm'
-            : 'text-red-600 bg-red-100 px-2 py-0.5 rounded-full text-sm'">
-            {{ order.success ? 'Successful' : 'Failed' }}
-          </span>
-        </div>
-
-        <ul class="text-sm space-y-1 text-on-surface-variant">
-          @for (item of order.items; track item.item) {
-            <li>{{ item.item }} &times; {{ item.quantity }}</li>
-          }
-        </ul>
-
-      </div>
-    }
-  } @else {
-    <div class="text-center py-xl text-on-surface-variant">
-      <span class="material-symbols-outlined text-4xl mb-sm fs-1">receipt_long</span>
-      <p>No orders yet</p>
-    </div>
-  }
-
-</article>
-        </article>
-    }
-      <!-- Order History Tab -->
+              } @else {
+                <div class="text-center py-xl text-on-surface-variant">
+                    <span class="material-symbols-outlined text-4xl mb-sm block">receipt_long</span>
+                    <p>No orders yet</p>
+                </div>
+              }
+          </article>
+      }
   </section>
 </main>
