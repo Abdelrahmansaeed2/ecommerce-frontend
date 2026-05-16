@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(express.json());
 
+
 const allowedOrigins = [
   "http://localhost:4200", 
   "https://luxebelle.vercel.app"
@@ -126,8 +127,11 @@ app.get("/payment/response", (req, res) => {
 });
 
 
+const dbPath = process.env.NODE_ENV === 'production'
+  ? path.join(__dirname, "db.json") 
+  : path.join(__dirname, "../db.json"); 
 
-const router = jsonServer.router(path.join(__dirname, "../db.json"));
+const router = jsonServer.router(dbPath);
 const middlewares = jsonServer.defaults();
 
 app.use(middlewares);
@@ -138,7 +142,7 @@ const PORT = process.env.PORT || 3001;
 
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
-    console.log(`Unified API & DB Server running locally on port ${PORT}`);
+    console.log(`Server running locally on port ${PORT}`);
   });
 }
 
