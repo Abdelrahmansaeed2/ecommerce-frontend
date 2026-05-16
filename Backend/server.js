@@ -15,14 +15,11 @@ const app = express();
 app.use(express.json());
 
 
-const allowedOrigins = [
-  "http://localhost:4200", 
-  "https://luxebelle.vercel.app"
-];
-
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || 
+        origin.startsWith("http://localhost") || 
+        origin.includes("vercel.app")) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
