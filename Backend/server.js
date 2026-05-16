@@ -50,6 +50,10 @@ async function paymobPost(pathStr, body) {
   return data;
 }
 
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "success", message: "LUXE Premium API Gateway is Live & Running!" });
+});
+
 app.post("/payment/initiate", async (req, res) => {
   try {
     const { amountEGP, billing = {} } = req.body;
