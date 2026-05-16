@@ -27,7 +27,9 @@ app.use(cors({
     } else {
       callback(new Error("Not allowed by CORS"));
     }
-  }
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 const CONFIG = {
@@ -35,9 +37,6 @@ const CONFIG = {
   INTEGRATION_ID: process.env.PAYMOB_INTEGRATION_ID,
   IFRAME_ID: process.env.PAYMOB_IFRAME_ID,
   BASE_URL: "https://accept.paymob.com/api",
-  GH_TOKEN: process.env.GH_TOKEN,
-  GH_REPO: process.env.GH_REPO,
-  GH_OWNER: process.env.GH_OWNER
 };
 
 async function paymobPost(pathStr, body) {
@@ -46,110 +45,26 @@ async function paymobPost(pathStr, body) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+  
   const data = await res.json();
-  if (!res.ok) throw new Error(`Paymob ${pathStr} failed: ${JSON.stringify(data)}`);
+  if (!res.ok) {
+    throw new Error(`Paymob ${pathStr} failed: ${JSON.stringify(data)}`);
+  }
   return data;
 }
-
-
-async function syncDatabaseToGitHub(updatedDbObject) {
-  if (process.env.NODE_ENV !== 'production') return; 
-  
-  try {
-    const url = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/Backend/db.json`;
-    
-    const getRes = await fetch(url, {
-      headers: { "Authorization": `token ${CONFIG.GH_TOKEN}` }
-    });
-    const getData = await getRes.json();
-    const sha = getData.sha;
-
-    const contentBase64 = Buffer.from(JSON.stringify(updatedDbObject, null, 2)).toString("base64");
-    
-    await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Authorization": `token ${CONFIG.GH_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: "database live update: synchronization commit",
-        content: contentBase64,
-        sha: sha
-      })
-    });
-    console.log("Database file successfully synchronized to GitHub repository.");
-  } catch (error) {
-    console.error("Failed to synchronize database update to GitHub:", error.message);
-  }
-}
-
-
-let dbPath = path.resolve(__dirname, "db.json");
-if (!fs.existsSync(dbPath)) {
-  dbPath = path.resolve(__dirname, "../db.json");
-}
-
-const rawData = fs.readFileSync(dbPath, "utf8");
-const dbObject = JSON.parse(rawData);
-
-const router = jsonServer.router(dbObject); 
-const middlewares = jsonServer.defaults();
-
-app.use(middlewares);
-
-app.use(async (req, res, next) => {
-  if (req.method === "POST" || req.method === "PUT" || req.method === "PATCH" || req.method === "DELETE") {
-    const key = req.path.split("/")[1]; 
-    
-    if (dbObject[key]) {
-      let responseData;
-
-      if (req.method === "POST") {
-        responseData = { id: Math.random().toString(36).substr(2, 9), ...req.body };
-        dbObject[key].push(responseData);
-        res.status(201).json(responseData);
-      }
-      
-      else if (req.method === "PUT" || req.method === "PATCH") {
-        const itemId = req.path.split("/")[2];
-        const item = dbObject[key].find(i => i.id === itemId);
-        if (item) {
-          Object.assign(item, req.body);
-          responseData = item;
-          res.json(item);
-        } else {
-          return res.status(404).json({ error: "Item not found" });
-        }
-      }
-
-      else if (req.method === "DELETE") {
-        const itemId = req.path.split("/")[2];
-        dbObject[key] = dbObject[key].filter(i => i.id !== itemId);
-        res.status(204).end();
-      }
-
-      await syncDatabaseToGitHub(dbObject);
-      return; 
-    }
-  }
-  next();
-});
-
-app.use(router);
 
 
 app.post("/payment/initiate", async (req, res) => {
   try {
     const { amountEGP, billing = {} } = req.body;
     if (!amountEGP) return res.status(400).json({ error: "amountEGP is required" });
-    const amountCents = Math.round(amountEGP * 100);
 
+    const amountCents = Math.round(amountEGP * 100);
     const authData = await paymobPost("/auth/tokens", { api_key: CONFIG.API_KEY });
     const token = authData.token;
 
     const order = await paymobPost("/ecommerce/orders", {
-      auth_token: token, delivery_needed: false, amount_cents: amountCents, currency: "EGP", items: []
+      auth_token: token, delivery_needed: false, amount_cents: amountCents, currency: "EGP", items: [],
     });
 
     const paymentKeyResponse = await paymobPost("/acceptance/payment_keys", {
@@ -174,9 +89,38 @@ app.get("/payment/response", (req, res) => {
   res.redirect(`${frontendUrl}/payment-result?success=${success}&orderId=${order}&transactionId=${id}&amount=${Number(amount_cents) / 100}`);
 });
 
+
+let sourceDbPath = path.resolve(__dirname, "db.json");
+if (!fs.existsSync(sourceDbPath)) {
+  sourceDbPath = path.resolve(__dirname, "../db.json");
+}
+
+let finalDbPath = sourceDbPath;
+
+if (process.env.NODE_ENV === 'production') {
+  finalDbPath = path.join("/tmp", "db.json");
+  
+  if (!fs.existsSync(finalDbPath) && fs.existsSync(sourceDbPath)) {
+    try {
+      fs.writeFileSync(finalDbPath, fs.readFileSync(sourceDbPath, "utf8"));
+      console.log(" db.json successfully copied to writable /tmp directory");
+    } catch (err) {
+      console.error(" Failed to copy db.json to /tmp:", err.message);
+    }
+  }
+}
+
+const router = jsonServer.router(finalDbPath);
+const middlewares = jsonServer.defaults();
+
+app.use(middlewares);
+app.use(router);
+
 const PORT = process.env.PORT || 3001;
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => console.log(`Server running locally on port ${PORT}`));
+  app.listen(PORT, () => {
+    console.log(`Server running locally on port ${PORT}`);
+  });
 }
 
 export default app;
