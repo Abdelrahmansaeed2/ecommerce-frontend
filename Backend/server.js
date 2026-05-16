@@ -5,7 +5,7 @@ import jsonServer from "json-server";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { Octokit } from "@octokit/core"; 
+import { Octokit } from "@octokit/core";
 
 dotenv.config(); 
 
@@ -40,18 +40,15 @@ const CONFIG = {
 
 
 async function syncDatabaseToGitHub(updatedDbObject) {
-  if (process.env.NODE_ENV !== 'production') return true; 
-  
   if (!CONFIG.GH_TOKEN || !CONFIG.GH_OWNER || !CONFIG.GH_REPO) {
-    console.error("Crucial Environment Variables Missing inside Vercel Settings!");
-    return false;
+    console.log("⚠️ Local environment or missing GH tokens. Skipping GitHub Sync.");
+    return true;
   }
 
   const octokit = new Octokit({ auth: CONFIG.GH_TOKEN });
 
   try {
-    console.log("Fetching db.json SHA via Official GitHub Client...");
-    
+    console.log("⏳ Fetching db.json SHA via Official GitHub Client...");
     const { data: fileData } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner: CONFIG.GH_OWNER,
       repo: CONFIG.GH_REPO,
@@ -61,7 +58,7 @@ async function syncDatabaseToGitHub(updatedDbObject) {
     const sha = fileData.sha;
     const contentBase64 = Buffer.from(JSON.stringify(updatedDbObject, null, 2)).toString("base64");
 
-    console.log("Committing updated db.json database to GitHub...");
+    console.log("⏳ Committing updated db.json database to GitHub...");
     const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
       owner: CONFIG.GH_OWNER,
       repo: CONFIG.GH_REPO,
@@ -72,15 +69,12 @@ async function syncDatabaseToGitHub(updatedDbObject) {
     });
 
     if (response.status === 200 || response.status === 201) {
-      console.log("db.json successfully synced and committed to GitHub!");
+      console.log("✅ db.json successfully synced and committed to GitHub!");
       return true;
     } 
     return false;
   } catch (error) {
-    console.error("Octokit GitHub Sync Engine Failed:", error.message);
-    if (error.response) {
-      console.error(`Status: ${error.response.status} - Data:`, JSON.stringify(error.response.data));
-    }
+    console.error("❌ Octokit GitHub Sync Engine Failed:", error.message);
     return false;
   }
 }
@@ -94,97 +88,92 @@ if (!fs.existsSync(dbPath)) {
 const rawData = fs.readFileSync(dbPath, "utf8");
 let dbObject = JSON.parse(rawData);
 
-if (process.env.NODE_ENV === 'production') {
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "success", message: "LUXE Premium API Gateway is Live & Running!" });
+});
+
+app.get("/users", (req, res) => {
+  const { email } = req.query;
+  if (email) return res.json(dbObject.users.filter(u => u.email === email));
+  res.json(dbObject.users);
+});
+
+app.post("/users", async (req, res) => {
+  const newUser = { id: Math.random().toString(36).substr(2, 9), ...req.body };
+  dbObject.users.push(newUser);
   
-  app.get("/users", (req, res) => {
-    const { email } = req.query;
-    if (email) return res.json(dbObject.users.filter(u => u.email === email));
-    res.json(dbObject.users);
-  });
+  const isSynced = await syncDatabaseToGitHub(dbObject);
+  if (isSynced) {
+    res.status(201).json(newUser);
+  } else {
+    res.status(500).json({ error: "Database updated in memory, but cloud sync failed." });
+  }
+});
 
-  app.post("/users", async (req, res) => {
-    const newUser = { id: Math.random().toString(36).substr(2, 9), ...req.body };
-    dbObject.users.push(newUser);
-    
+app.patch("/users/:id", async (req, res) => {
+  const user = dbObject.users.find(u => u.id === req.params.id);
+  if (user) {
+    Object.assign(user, req.body);
     const isSynced = await syncDatabaseToGitHub(dbObject);
-    if (isSynced) {
-      res.status(201).json(newUser);
-    } else {
-      res.status(500).json({ error: "Database updated in memory, but cloud sync failed. Check server logs." });
-    }
-  });
+    if (isSynced) res.json(user);
+    else res.status(500).json({ error: "GitHub patch sync failed." });
+  } else {
+    res.status(404).json({ error: "User not found" });
+  }
+});
 
-  app.patch("/users/:id", async (req, res) => {
-    const user = dbObject.users.find(u => u.id === req.params.id);
-    if (user) {
-      Object.assign(user, req.body);
-      const isSynced = await syncDatabaseToGitHub(dbObject);
-      if (isSynced) res.json(user);
-      else res.status(500).json({ error: "GitHub patch sync failed." });
-    } else {
-      res.status(404).json({ error: "User not found" });
-    }
-  });
+app.get("/products", (req, res) => res.json(dbObject.products));
+app.get("/products/:id", (req, res) => {
+  const p = dbObject.products.find(prod => prod.id === req.params.id);
+  p ? res.json(p) : res.status(404).json({ error: "Not Found" });
+});
 
-  app.get("/products", (req, res) => res.json(dbObject.products));
-  app.get("/products/:id", (req, res) => {
-    const p = dbObject.products.find(prod => prod.id === req.params.id);
-    p ? res.json(p) : res.status(404).json({ error: "Not Found" });
-  });
+app.get("/cart", (req, res) => {
+  const { email } = req.query;
+  if (email) return res.json(dbObject.cart.filter(c => c.email === email));
+  res.json(dbObject.cart);
+});
 
-  app.get("/cart", (req, res) => {
-    const { email } = req.query;
-    if (email) return res.json(dbObject.cart.filter(c => c.email === email));
-    res.json(dbObject.cart);
-  });
+app.post("/cart", async (req, res) => {
+  const newCart = { id: Math.random().toString(36).substr(2, 9), ...req.body };
+  dbObject.cart.push(newCart);
+  const isSynced = await syncDatabaseToGitHub(dbObject);
+  if (isSynced) res.status(201).json(newCart);
+  else res.status(500).json({ error: "Cart sync failed." });
+});
 
-  app.post("/cart", async (req, res) => {
-    const newCart = { id: Math.random().toString(36).substr(2, 9), ...req.body };
-    dbObject.cart.push(newCart);
+app.put("/cart/:id", async (req, res) => {
+  const index = dbObject.cart.findIndex(c => c.id === req.params.id);
+  if (index !== -1) {
+    dbObject.cart[index] = { ...dbObject.cart[index], ...req.body };
     const isSynced = await syncDatabaseToGitHub(dbObject);
-    if (isSynced) res.status(201).json(newCart);
-    else res.status(500).json({ error: "Cart sync failed." });
-  });
+    if (isSynced) res.json(dbObject.cart[index]);
+    else res.status(500).json({ error: "Cart update sync failed." });
+  } else { 
+    res.status(404).json({ error: "Not found" }); 
+  }
+});
 
-  app.put("/cart/:id", async (req, res) => {
-    const index = dbObject.cart.findIndex(c => c.id === req.params.id);
-    if (index !== -1) {
-      dbObject.cart[index] = { ...dbObject.cart[index], ...req.body };
-      const isSynced = await syncDatabaseToGitHub(dbObject);
-      if (isSynced) res.json(dbObject.cart[index]);
-      else res.status(500).json({ error: "Cart update sync failed." });
-    } else { 
-      res.status(404).json({ error: "Not found" }); 
-    }
-  });
+app.delete("/cart/:id", async (req, res) => {
+  dbObject.cart = dbObject.cart.filter(c => c.id !== req.params.id);
+  const isSynced = await syncDatabaseToGitHub(dbObject);
+  if (isSynced) res.status(204).end();
+  else res.status(500).json({ error: "Cart delete sync failed." });
+});
 
-  app.delete("/cart/:id", async (req, res) => {
-    dbObject.cart = dbObject.cart.filter(c => c.id !== req.params.id);
-    const isSynced = await syncDatabaseToGitHub(dbObject);
-    if (isSynced) res.status(204).end();
-    else res.status(500).json({ error: "Cart delete sync failed." });
-  });
+app.get("/payments", (req, res) => {
+  const { email } = req.query;
+  if (email) return res.json(dbObject.payments.filter(p => p.email === email));
+  res.json(dbObject.payments);
+});
 
-  app.get("/payments", (req, res) => {
-    const { email } = req.query;
-    if (email) return res.json(dbObject.payments.filter(p => p.email === email));
-    res.json(dbObject.payments);
-  });
-
-  app.post("/payments", async (req, res) => {
-    const newPay = { id: Math.random().toString(36).substr(2, 9), ...req.body };
-    dbObject.payments.push(newPay);
-    const isSynced = await syncDatabaseToGitHub(dbObject);
-    if (isSynced) res.status(201).json(newPay);
-    else res.status(500).json({ error: "Payment sync failed." });
-  });
-
-} else {
-  const router = jsonServer.router(dbPath);
-  const middlewares = jsonServer.defaults();
-  app.use(middlewares);
-  app.use(router);
-}
+app.post("/payments", async (req, res) => {
+  const newPay = { id: Math.random().toString(36).substr(2, 9), ...req.body };
+  dbObject.payments.push(newPay);
+  const isSynced = await syncDatabaseToGitHub(dbObject);
+  if (isSynced) res.status(201).json(newPay);
+  else res.status(500).json({ error: "Payment sync failed." });
+});
 
 
 async function paymobPost(pathStr, body) {
@@ -229,15 +218,13 @@ app.post("/payment/initiate", async (req, res) => {
 
 app.get("/payment/response", (req, res) => {
   const { success, order, id, amount_cents } = req.query;
-  const frontendUrl = process.env.NODE_ENV === 'production' ? 'https://luxebelle.vercel.app' : 'http://localhost:4200';
+  const frontendUrl = 'https://luxebelle.vercel.app'; 
   res.redirect(`${frontendUrl}/payment-result?success=${success}&orderId=${order}&transactionId=${id}&amount=${Number(amount_cents) / 100}`);
 });
 
 const PORT = process.env.PORT || 3001;
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Unified API running locally on port ${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`Unified API running on port ${PORT}`);
+});
 
 export default app;
