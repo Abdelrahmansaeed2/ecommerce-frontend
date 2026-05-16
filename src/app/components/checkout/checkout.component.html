@@ -114,7 +114,7 @@
         <div class="totals-section">
           <p class="total-row"><span class="total-label">Subtotal</span><span class="total-value">{{ subtotal | currency }}</span></p>
           <p class="total-row"><span class="total-label">Shipping</span><span class="total-value highlight">Free</span></p>
-          <p class="total-row"><span class="total-label">Estimated Tax</span><span class="total-value">{{  currency }}</span></p>
+          <p class="total-row"><span class="total-label">Estimated Tax</span><span class="total-value">{{ tax | currency }}</span></p>
           <p class="total-row grand-total"><span class="total-label">Total</span><span class="total-value">{{ total | currency }}</span></p>
         </div>
         <button class="btn-primary" (click)="confirmOrder()">Confirm Order <span class="material-symbols-outlined text-sm">arrow_forward</span></button>
