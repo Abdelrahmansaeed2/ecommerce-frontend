@@ -3,14 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { from, Observable, map, switchMap, throwError } from 'rxjs';
 import { User } from '../models/user.model';
 import * as bcrypt from 'bcryptjs';
-import { email } from '@angular/forms/signals';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000';
-  private secretKey = 'your-secret-key'; // In production, use environment variable
+  private apiUrl = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000' 
+    : 'https://my-json-server.typicode.com/Abdelrahmansaeed2/ecommerce-frontend';
+
+  private secretKey = 'your-secret-key'; 
   private user : User = { name: "", email: ""}
   private id : string = ''
   constructor(private http: HttpClient) {}
@@ -72,7 +74,6 @@ export class AuthService {
   }
 
   signup(user: Omit<User, 'id'>): Observable<User> {
-    // Check if email already exists
     return this.http.get<User[]>(`${this.apiUrl}/users?email=${user.email}`).pipe(
       switchMap((existingUsers) => {
         if (existingUsers.length > 0) {
@@ -106,13 +107,12 @@ export class AuthService {
 
   getUserData(){
     return this.http.get<User[]>(`${this.apiUrl}/users?email=${localStorage.getItem("User")}`)
-  
   }
-  updateUser(user: User) {
-        this.http.patch(`${this.apiUrl}/users/${this.id}`,{
-            name: user.name,
-            email: user.email
-        }).subscribe();
 
+  updateUser(user: User) {
+    this.http.patch(`${this.apiUrl}/users/${this.id}`,{
+        name: user.name,
+        email: user.email
+    }).subscribe();
   }
 }

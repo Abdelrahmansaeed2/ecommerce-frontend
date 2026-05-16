@@ -1,11 +1,15 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { Product, CartItem } from '../models/product.model';
 import { HttpClient } from '@angular/common/http';
+
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000';
+  
+  private apiUrl = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000' 
+    : 'https://my-json-server.typicode.com/Abdelrahmansaeed2/ecommerce-frontend';
+
   private items: CartItem[] = [];
   public cartRecordId: string | null = null;
   cart = signal<CartItem[]>([]);
