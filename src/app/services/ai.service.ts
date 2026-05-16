@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { ProductService } from './product.service';
 import { firstValueFrom } from 'rxjs';
 import { Product } from '../models/product.model';
@@ -7,11 +8,11 @@ import { Product } from '../models/product.model';
   providedIn: 'root'
 })
 export class AiService {
-  // IMPORTANT: Replace with your actual Groq API key
-  private readonly API_KEY = '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';
-  private readonly API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-  private readonly MODEL = 'llama-3.3-70b-versatile';
+  private apiUrl = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3001' 
+    : 'https://luxebelle-backend.vercel.app';
 
+  private http = inject(HttpClient);
   constructor(private productService: ProductService) {}
 
   private getSystemPrompt(products: Product[]): string {
@@ -56,30 +57,16 @@ Always refer to these products when asked for recommendations.`;
         { role: 'user', content: userMessage }
       ];
 
-      const response = await fetch(this.API_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: this.MODEL,
-          messages: messages,
-          temperature: 0.7,
-          max_tokens: 1024,
-        })
-      });
+      console.log('Routing AI chat request securely to backend gateway...');
+      
+      const response = await firstValueFrom(
+        this.http.post<{ content: string }>(`${this.apiUrl}/api/chat`, { messages })
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'API request failed');
-      }
-
-      const data = await response.json();
-      return data.choices[0].message.content;
+      return response.content;
     } catch (error: any) {
-      console.error('Groq API Error:', error);
-      return `I'm sorry, I'm having trouble connecting to my brain right now. Error: ${error.message}`;
+      console.error('Secure Chat Client Error:', error);
+      return `I'm sorry, I'm having trouble connecting to my brain right now.`;
     }
   }
 }

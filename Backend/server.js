@@ -41,7 +41,7 @@ const CONFIG = {
 
 async function syncDatabaseToGitHub(updatedDbObject) {
   if (!CONFIG.GH_TOKEN || !CONFIG.GH_OWNER || !CONFIG.GH_REPO) {
-    console.log("Local environment or missing GH tokens. Skipping GitHub Sync.");
+    console.log(" Local environment or missing GH tokens. Skipping GitHub Sync.");
     return true;
   }
 
@@ -58,7 +58,7 @@ async function syncDatabaseToGitHub(updatedDbObject) {
     const sha = fileData.sha;
     const contentBase64 = Buffer.from(JSON.stringify(updatedDbObject, null, 2)).toString("base64");
 
-    console.log("Committing updated db.json database to GitHub...");
+    console.log("⏳ Committing updated db.json database to GitHub...");
     const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
       owner: CONFIG.GH_OWNER,
       repo: CONFIG.GH_REPO,
@@ -69,7 +69,7 @@ async function syncDatabaseToGitHub(updatedDbObject) {
     });
 
     if (response.status === 200 || response.status === 201) {
-      console.log(" db.json successfully synced and committed to GitHub!");
+      console.log("db.json successfully synced and committed to GitHub!");
       return true;
     } 
     return false;
@@ -173,6 +173,35 @@ app.post("/payments", async (req, res) => {
   const isSynced = await syncDatabaseToGitHub(dbObject);
   if (isSynced) res.status(201).json(newPay);
   else res.status(500).json({ error: "Payment sync failed." });
+});
+
+
+app.post("/api/chat", async (req, res) => {
+  try {
+    const { messages } = req.body;
+    
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 1024,
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'Groq API gateway failed');
+    
+    res.json({ content: data.choices[0].message.content });
+  } catch (err) {
+    console.error("Groq Gateway Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
