@@ -126,6 +126,19 @@ if (!fs.existsSync(dbPath)) {
   dbPath = path.resolve(__dirname, "../db.json");
 }
 
+if (process.env.NODE_ENV === 'production' || !fs.existsSync(dbPath)) {
+  const writablePath = path.join("/tmp", "db.json");
+  try {
+    if (fs.existsSync(dbPath)) {
+      fs.writeFileSync(writablePath, fs.readFileSync(dbPath, "utf8"));
+      dbPath = writablePath; 
+      console.log("Database successfully moved to serverless writable disk memory.");
+    }
+  } catch (e) {
+    console.error("Failed to clone db.json to writable disk:", e);
+  }
+}
+
 console.log(`Serverless engine utilizing database path resolved at: ${dbPath}`);
 
 const router = jsonServer.router(dbPath);
