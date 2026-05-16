@@ -168,6 +168,12 @@
       "name": "abdelrahman nader",
       "email": "a2@gmail.com",
       "password": "$2b$10$dxJhJWL0KQ4gpb297mp/c.O8mN2V92lSiv7Q7pdSkkQ0c91jX4X7q"
+    },
+    {
+      "id": "23ov815f5",
+      "name": "Ahmes Wael",
+      "email": "oomostafa120@gmail.com",
+      "password": "$2b$10$UHZLgQw3ZBzm3r8jcYH6v.hgpNmNxP9RURLEaqSXTN19M8nXaLTzS"
     }
   ],
   "payments": [
