@@ -5,8 +5,8 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({ providedIn: 'root' })
 export class ProductService {
     private apiUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:3000' 
-      : 'https://my-json-server.typicode.com/Abdelrahmansaeed2/ecommerce-frontend';
+      ? 'http://localhost:3001' 
+      : 'https://luxebelle-backend.vercel.app';
 
     http = inject(HttpClient);
 

@@ -1,11 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import jsonServer from "json-server";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config(); 
 
-const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+const app = express();
 app.use(express.json());
 
 const allowedOrigins = [
@@ -36,8 +41,8 @@ if (!CONFIG.API_KEY) {
   console.log("Environment variables loaded successfully.");
 }
 
-async function paymobPost(path, body) {
-  const res = await fetch(`${CONFIG.BASE_URL}${path}`, {
+async function paymobPost(pathStr, body) {
+  const res = await fetch(`${CONFIG.BASE_URL}${pathStr}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -45,10 +50,11 @@ async function paymobPost(path, body) {
   
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(`Paymob ${path} failed: ${JSON.stringify(data)}`);
+    throw new Error(`Paymob ${pathStr} failed: ${JSON.stringify(data)}`);
   }
   return data;
 }
+
 
 app.post("/payment/initiate", async (req, res) => {
   try {
@@ -119,11 +125,20 @@ app.get("/payment/response", (req, res) => {
   );
 });
 
+
+
+const router = jsonServer.router(path.join(__dirname, "../db.json"));
+const middlewares = jsonServer.defaults();
+
+app.use(middlewares);
+
+app.use(router);
+
 const PORT = process.env.PORT || 3001;
 
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
-    console.log(`Server running locally on port ${PORT}`);
+    console.log(`Unified API & DB Server running locally on port ${PORT}`);
   });
 }
 

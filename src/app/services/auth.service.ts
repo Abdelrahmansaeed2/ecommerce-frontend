@@ -9,8 +9,8 @@ import * as bcrypt from 'bcryptjs';
 })
 export class AuthService {
   private apiUrl = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000' 
-    : 'https://my-json-server.typicode.com/Abdelrahmansaeed2/ecommerce-frontend';
+    ? 'http://localhost:3001' 
+    : 'https://luxebelle-backend.vercel.app';
 
   private secretKey = 'your-secret-key'; 
   private user : User = { name: "", email: ""}
