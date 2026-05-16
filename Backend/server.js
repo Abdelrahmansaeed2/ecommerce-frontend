@@ -39,18 +39,21 @@ const CONFIG = {
 
 
 async function syncDatabaseToGitHub(updatedDbObject) {
-  if (process.env.NODE_ENV !== 'production') return;
+  if (process.env.NODE_ENV !== 'production') return true; 
   
   try {
     const url = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/Backend/db.json`;
+    
+    console.log("Fetching SHA from GitHub URL:", url);
     
     const getRes = await fetch(url, {
       headers: { "Authorization": `token ${CONFIG.GH_TOKEN}` }
     });
     
     if (!getRes.ok) {
-      console.error(" GitHub SHA Fetch Failed:", getRes.statusText);
-      return;
+      const errText = await getRes.text();
+      console.error(`GitHub SHA Fetch Failed (${getRes.status}):`, errText);
+      return false;
     }
     
     const getData = await getRes.json();
@@ -58,6 +61,7 @@ async function syncDatabaseToGitHub(updatedDbObject) {
 
     const contentBase64 = Buffer.from(JSON.stringify(updatedDbObject, null, 2)).toString("base64");
     
+    console.log("Sending update commit to GitHub");
     const putRes = await fetch(url, {
       method: "PUT",
       headers: {
@@ -65,7 +69,7 @@ async function syncDatabaseToGitHub(updatedDbObject) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        message: " Live Production Database Sync: Record Added/Updated",
+        message: "⚡ Live Production Database Sync: Record Modified",
         content: contentBase64,
         sha: sha
       })
@@ -73,11 +77,15 @@ async function syncDatabaseToGitHub(updatedDbObject) {
 
     if (putRes.ok) {
       console.log("db.json successfully synced and committed to GitHub!");
+      return true;
     } else {
-      console.error("GitHub Commit Failed:", putRes.statusText);
+      const putErrText = await putRes.text();
+      console.error(`GitHub Commit Failed (${putRes.status}):`, putErrText);
+      return false;
     }
   } catch (error) {
-    console.error(" Failed to sync update to GitHub:", error.message);
+    console.error("Fatal Error during GitHub Sync:", error.message);
+    return false;
   }
 }
 
@@ -101,16 +109,22 @@ if (process.env.NODE_ENV === 'production') {
   app.post("/users", async (req, res) => {
     const newUser = { id: Math.random().toString(36).substr(2, 9), ...req.body };
     dbObject.users.push(newUser);
-    res.status(201).json(newUser);
-    await syncDatabaseToGitHub(dbObject); 
+    
+    const isSynced = await syncDatabaseToGitHub(dbObject);
+    if (isSynced) {
+      res.status(201).json(newUser);
+    } else {
+      res.status(500).json({ error: "Database updated in memory, but cloud sync failed. Check server logs." });
+    }
   });
 
   app.patch("/users/:id", async (req, res) => {
     const user = dbObject.users.find(u => u.id === req.params.id);
     if (user) {
       Object.assign(user, req.body);
-      res.json(user);
-      await syncDatabaseToGitHub(dbObject); 
+      const isSynced = await syncDatabaseToGitHub(dbObject);
+      if (isSynced) res.json(user);
+      else res.status(500).json({ error: "GitHub patch sync failed." });
     } else {
       res.status(404).json({ error: "User not found" });
     }
@@ -131,16 +145,18 @@ if (process.env.NODE_ENV === 'production') {
   app.post("/cart", async (req, res) => {
     const newCart = { id: Math.random().toString(36).substr(2, 9), ...req.body };
     dbObject.cart.push(newCart);
-    res.status(201).json(newCart);
-    await syncDatabaseToGitHub(dbObject);
+    const isSynced = await syncDatabaseToGitHub(dbObject);
+    if (isSynced) res.status(201).json(newCart);
+    else res.status(500).json({ error: "Cart sync failed." });
   });
 
   app.put("/cart/:id", async (req, res) => {
     const index = dbObject.cart.findIndex(c => c.id === req.params.id);
     if (index !== -1) {
       dbObject.cart[index] = { ...dbObject.cart[index], ...req.body };
-      res.json(dbObject.cart[index]);
-      await syncDatabaseToGitHub(dbObject);
+      const isSynced = await syncDatabaseToGitHub(dbObject);
+      if (isSynced) res.json(dbObject.cart[index]);
+      else res.status(500).json({ error: "Cart update sync failed." });
     } else { 
       res.status(404).json({ error: "Not found" }); 
     }
@@ -148,8 +164,9 @@ if (process.env.NODE_ENV === 'production') {
 
   app.delete("/cart/:id", async (req, res) => {
     dbObject.cart = dbObject.cart.filter(c => c.id !== req.params.id);
-    res.status(204).end();
-    await syncDatabaseToGitHub(dbObject);
+    const isSynced = await syncDatabaseToGitHub(dbObject);
+    if (isSynced) res.status(204).end();
+    else res.status(500).json({ error: "Cart delete sync failed." });
   });
 
   app.get("/payments", (req, res) => {
@@ -161,8 +178,9 @@ if (process.env.NODE_ENV === 'production') {
   app.post("/payments", async (req, res) => {
     const newPay = { id: Math.random().toString(36).substr(2, 9), ...req.body };
     dbObject.payments.push(newPay);
-    res.status(201).json(newPay);
-    await syncDatabaseToGitHub(dbObject);
+    const isSynced = await syncDatabaseToGitHub(dbObject);
+    if (isSynced) res.status(201).json(newPay);
+    else res.status(500).json({ error: "Payment sync failed." });
   });
 
 } else {
