@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import jsonServer from "json-server";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 dotenv.config(); 
@@ -37,9 +38,7 @@ const CONFIG = {
 };
 
 if (!CONFIG.API_KEY) {
-  console.error("ERROR: PAYMOB_API_KEY is missing! Make sure it is set in your Environment Variables.");
-} else {
-  console.log("Environment variables loaded successfully.");
+  console.error("ERROR: PAYMOB_API_KEY is missing! Set it in your Vercel Environment Variables.");
 }
 
 async function paymobPost(pathStr, body) {
@@ -92,15 +91,8 @@ app.post("/payment/initiate", async (req, res) => {
         last_name: billing.lastName || "NA",
         email: billing.email || "NA",
         phone_number: billing.phone || "NA",
-        apartment: "NA", 
-        floor: "NA", 
-        street: "NA",
-        building: "NA", 
-        shipping_method: "NA",
-        postal_code: "NA", 
-        city: "NA", 
-        country: "EG", 
-        state: "NA",
+        apartment: "NA", floor: "NA", street: "NA", building: "NA", shipping_method: "NA",
+        postal_code: "NA", city: "NA", country: "EG", state: "NA",
       },
     });
 
@@ -127,15 +119,19 @@ app.get("/payment/response", (req, res) => {
 });
 
 
-const dbPath = process.env.NODE_ENV === 'production'
-  ? path.join(__dirname, "db.json") 
-  : path.join(__dirname, "../db.json"); 
+
+let dbPath = path.resolve(__dirname, "db.json");
+
+if (!fs.existsSync(dbPath)) {
+  dbPath = path.resolve(__dirname, "../db.json");
+}
+
+console.log(`Serverless engine utilizing database path resolved at: ${dbPath}`);
 
 const router = jsonServer.router(dbPath);
 const middlewares = jsonServer.defaults();
 
 app.use(middlewares);
-
 app.use(router);
 
 const PORT = process.env.PORT || 3001;
