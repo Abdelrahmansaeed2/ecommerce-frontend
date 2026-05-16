@@ -2,12 +2,25 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
-dotenv.config({ path: '/Users/abdelrahmansaeed/angularr/ecommerce-frontend/.env' });
+dotenv.config(); 
 
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:4200" }));
+
+const allowedOrigins = [
+  "http://localhost:4200", 
+  "https://your-angular-app.vercel.app" 
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
 
 const CONFIG = {
   API_KEY: process.env.PAYMOB_API_KEY,
@@ -17,11 +30,10 @@ const CONFIG = {
 };
 
 if (!CONFIG.API_KEY) {
-  console.error(" ERROR: PAYMOB_API_KEY still not found! Check the path and key name in your .env file.");
+  console.error("ERROR: PAYMOB_API_KEY is missing! Make sure it is set in your Environment Variables.");
 } else {
-  console.log(" Environment variables loaded successfully from frontend directory.");
+  console.log("Environment variables loaded successfully.");
 }
-
 
 async function paymobPost(path, body) {
   const res = await fetch(`${CONFIG.BASE_URL}${path}`, {
@@ -36,7 +48,6 @@ async function paymobPost(path, body) {
   }
   return data;
 }
-
 
 app.post("/payment/initiate", async (req, res) => {
   try {
@@ -95,16 +106,19 @@ app.post("/payment/initiate", async (req, res) => {
   }
 });
 
-
 app.get("/payment/response", (req, res) => {
   const { success, order, id, amount_cents } = req.query;
   
+  const frontendUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://your-angular-app.vercel.app' 
+    : 'http://localhost:4200';
+  
   res.redirect(
-    `http://localhost:4200/payment-result?success=${success}&orderId=${order}&transactionId=${id}&amount=${Number(amount_cents) / 100}`
+    `${frontendUrl}/payment-result?success=${success}&orderId=${order}&transactionId=${id}&amount=${Number(amount_cents) / 100}`
   );
 });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
