@@ -1,9 +1,9 @@
-import { FormsModule, NgModel } from '@angular/forms';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { CartService } from '../../services/cart.service';
-import { CartItem } from '../../models/product.model';
 
 interface BillingForm {
   firstName: string;
@@ -20,10 +20,16 @@ interface BillingForm {
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.css'
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnInit {
+  private apiUrl = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3001' 
+    : 'https://luxebelle-backend.vercel.app';
+
   router = inject(Router);
   cartService = inject(CartService);
-   billing: BillingForm = {
+  private http = inject(HttpClient);
+
+  billing: BillingForm = {
     firstName: '',
     lastName: '',
     street: '',
@@ -31,19 +37,26 @@ export class CheckoutComponent {
     postalCode: '',
   };
 
-
-   getBillingForPaymob() {
-    return {
-      firstName: this.billing.firstName,
-      lastName: this.billing.lastName,
-      street: this.billing.street,
-      city: this.billing.city,
-      postalCode: this.billing.postalCode,
-    };
-  }
+  selectedPayment = 'card';
+  isProcessing = false;
 
   cart = this.cartService.cart();
-  selectedPayment = 'card';
+
+  ngOnInit(): void {
+    this.cart = this.cartService.cart();
+  }
+
+  getBillingForPaymob() {
+    return {
+      firstName: this.billing.firstName || 'Guest',
+      lastName: this.billing.lastName || 'User',
+      email: localStorage.getItem('User') || 'test@gmail.com',
+      phone: '01000000000', 
+      street: this.billing.street || 'NA',
+      city: this.billing.city || 'NA',
+      postalCode: this.billing.postalCode || 'NA'
+    };
+  }
 
   get subtotal() { return this.cartService.getSubtotal(); }
   get tax() { return this.subtotal * 0.08; }
@@ -51,24 +64,42 @@ export class CheckoutComponent {
 
   setPayment(method: string) { this.selectedPayment = method; }
 
-  async confirmOrder() {
-    if(this.subtotal === 0) {
+  confirmOrder() {
+    if (this.subtotal === 0) {
       alert('Your cart is empty.');
       return;
     }
-    const { checkoutUrl } = await fetch("http://localhost:3001/payment/initiate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-      amountEGP: this.total,
-      billing: this.getBillingForPaymob()
-    }),
-    }).then(
-      r => {
-        return r.json()
-      }
-    );
 
-    window.location.href = checkoutUrl;
+    this.isProcessing = true;
+
+    const paymentPayload = {
+      amountEGP: this.total,
+      billing: {
+        firstName: this.billing.firstName || 'Guest',
+        lastName: this.billing.lastName || 'User',
+        email: localStorage.getItem('User') || 'test@gmail.com',
+        phone: '01000000000'
+      }
+    };
+
+    console.log('Initiating payment gateway routing to:', `${this.apiUrl}/payment/initiate`);
+
+    this.http.post<{ checkoutUrl: string }>(`${this.apiUrl}/payment/initiate`, paymentPayload)
+      .subscribe({
+        next: (response) => {
+          this.isProcessing = false;
+          if (response && response.checkoutUrl) {
+            console.log('Redirecting to Paymob Secure Iframe...');
+            window.location.href = response.checkoutUrl;
+          } else {
+            alert('Failed to get payment checkout URL from server.');
+          }
+        },
+        error: (err) => {
+          this.isProcessing = false;
+          console.error('Checkout error detail:', err);
+          alert('Error communicating with payment gateway. Please check backend status.');
+        }
+      });
   }
 }
