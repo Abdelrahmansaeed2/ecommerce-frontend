@@ -10,8 +10,9 @@ app.use(express.json());
 
 const allowedOrigins = [
   "http://localhost:4200", 
-  "https://your-angular-app.vercel.app" 
+  "https://luxebelle.vercel.app"
 ];
+
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -110,7 +111,7 @@ app.get("/payment/response", (req, res) => {
   const { success, order, id, amount_cents } = req.query;
   
   const frontendUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://your-angular-app.vercel.app' 
+    ? 'https://luxebelle.vercel.app' 
     : 'http://localhost:4200';
   
   res.redirect(
@@ -119,6 +120,11 @@ app.get("/payment/response", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running locally on port ${PORT}`);
+  });
+}
+
+export default app;
