@@ -212,6 +212,12 @@
       "name": "Ahmes Wael",
       "email": "oomostafa120@gmail.com",
       "password": "$2b$10$UHZLgQw3ZBzm3r8jcYH6v.hgpNmNxP9RURLEaqSXTN19M8nXaLTzS"
+    },
+    {
+      "id": "2lcb71420",
+      "name": "Asmaa Hamdy",
+      "email": "asmaahdy123@gmail.com",
+      "password": "$2b$10$P66VF2MrOYFpV18aCF57zedjdTrv1GMrxhs3xho17UVporEFpTR7C"
     }
   ],
   "payments": [
