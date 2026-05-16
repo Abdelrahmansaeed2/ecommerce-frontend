@@ -41,14 +41,14 @@ const CONFIG = {
 
 async function syncDatabaseToGitHub(updatedDbObject) {
   if (!CONFIG.GH_TOKEN || !CONFIG.GH_OWNER || !CONFIG.GH_REPO) {
-    console.log("⚠️ Local environment or missing GH tokens. Skipping GitHub Sync.");
+    console.log("Local environment or missing GH tokens. Skipping GitHub Sync.");
     return true;
   }
 
   const octokit = new Octokit({ auth: CONFIG.GH_TOKEN });
 
   try {
-    console.log("⏳ Fetching db.json SHA via Official GitHub Client...");
+    console.log("Fetching db.json SHA via Official GitHub Client...");
     const { data: fileData } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner: CONFIG.GH_OWNER,
       repo: CONFIG.GH_REPO,
@@ -58,23 +58,23 @@ async function syncDatabaseToGitHub(updatedDbObject) {
     const sha = fileData.sha;
     const contentBase64 = Buffer.from(JSON.stringify(updatedDbObject, null, 2)).toString("base64");
 
-    console.log("⏳ Committing updated db.json database to GitHub...");
+    console.log("Committing updated db.json database to GitHub...");
     const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
       owner: CONFIG.GH_OWNER,
       repo: CONFIG.GH_REPO,
       path: 'Backend/db.json',
-      message: '⚡ Live Production Database Sync: Record Modified Successfully',
+      message: 'Live Production Database Sync: Record Modified Successfully',
       content: contentBase64,
       sha: sha
     });
 
     if (response.status === 200 || response.status === 201) {
-      console.log("✅ db.json successfully synced and committed to GitHub!");
+      console.log(" db.json successfully synced and committed to GitHub!");
       return true;
     } 
     return false;
   } catch (error) {
-    console.error("❌ Octokit GitHub Sync Engine Failed:", error.message);
+    console.error("Octokit GitHub Sync Engine Failed:", error.message);
     return false;
   }
 }
