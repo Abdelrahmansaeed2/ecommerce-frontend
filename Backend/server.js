@@ -5,6 +5,7 @@ import jsonServer from "json-server";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { Octokit } from "@octokit/core"; 
 
 dotenv.config(); 
 
@@ -41,50 +42,45 @@ const CONFIG = {
 async function syncDatabaseToGitHub(updatedDbObject) {
   if (process.env.NODE_ENV !== 'production') return true; 
   
+  if (!CONFIG.GH_TOKEN || !CONFIG.GH_OWNER || !CONFIG.GH_REPO) {
+    console.error("Crucial Environment Variables Missing inside Vercel Settings!");
+    return false;
+  }
+
+  const octokit = new Octokit({ auth: CONFIG.GH_TOKEN });
+
   try {
-    const url = `https://api.github.com/repos/${CONFIG.GH_OWNER}/${CONFIG.GH_REPO}/contents/Backend/db.json`;
+    console.log("Fetching db.json SHA via Official GitHub Client...");
     
-    console.log("Fetching SHA from GitHub URL:", url);
-    
-    const getRes = await fetch(url, {
-      headers: { "Authorization": `token ${CONFIG.GH_TOKEN}` }
+    const { data: fileData } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner: CONFIG.GH_OWNER,
+      repo: CONFIG.GH_REPO,
+      path: 'Backend/db.json'
     });
-    
-    if (!getRes.ok) {
-      const errText = await getRes.text();
-      console.error(`GitHub SHA Fetch Failed (${getRes.status}):`, errText);
-      return false;
-    }
-    
-    const getData = await getRes.json();
-    const sha = getData.sha;
 
+    const sha = fileData.sha;
     const contentBase64 = Buffer.from(JSON.stringify(updatedDbObject, null, 2)).toString("base64");
-    
-    console.log("Sending update commit to GitHub");
-    const putRes = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Authorization": `token ${CONFIG.GH_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: "⚡ Live Production Database Sync: Record Modified",
-        content: contentBase64,
-        sha: sha
-      })
+
+    console.log("Committing updated db.json database to GitHub...");
+    const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+      owner: CONFIG.GH_OWNER,
+      repo: CONFIG.GH_REPO,
+      path: 'Backend/db.json',
+      message: '⚡ Live Production Database Sync: Record Modified Successfully',
+      content: contentBase64,
+      sha: sha
     });
 
-    if (putRes.ok) {
+    if (response.status === 200 || response.status === 201) {
       console.log("db.json successfully synced and committed to GitHub!");
       return true;
-    } else {
-      const putErrText = await putRes.text();
-      console.error(`GitHub Commit Failed (${putRes.status}):`, putErrText);
-      return false;
-    }
+    } 
+    return false;
   } catch (error) {
-    console.error("Fatal Error during GitHub Sync:", error.message);
+    console.error("Octokit GitHub Sync Engine Failed:", error.message);
+    if (error.response) {
+      console.error(`Status: ${error.response.status} - Data:`, JSON.stringify(error.response.data));
+    }
     return false;
   }
 }
